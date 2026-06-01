@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.ClassificationMigrationMapper">
+    <resultMap type="com.ruoyi.risk.domain.ClassificationMigration" id="ClassificationMigrationResult">
+        <result property="migrationId" column="migration_id"/>
+        <result property="loanId" column="loan_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="fromLevel" column="from_level"/>
+        <result property="toLevel" column="to_level"/>
+        <result property="migrateDate" column="migrate_date"/>
+        <result property="reason" column="reason"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.ClassificationMigration" resultMap="ClassificationMigrationResult">
+        SELECT * FROM classification_migration
+        <where>
+            <if test="loanId != null">AND loan_id = #{loanId}</if>
+            <if test="companyName != null and companyName != ''">AND company_name LIKE concat('%', #{companyName}, '%')</if>
+        </where>
+        ORDER BY migrate_date DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.ClassificationMigration" useGeneratedKeys="true" keyProperty="migrationId">
+        INSERT INTO classification_migration (loan_id, company_name, from_level, to_level, migrate_date, reason)
+        VALUES (#{loanId}, #{companyName}, #{fromLevel}, #{toLevel}, #{migrateDate}, #{reason})
+    </insert>
+
+    <delete id="deleteByIds" parameterType="String">
+        DELETE FROM classification_migration WHERE migration_id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RiskAlertRuleMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.RiskAlertRule" id="RiskAlertRuleResult">
+        <result property="id"            column="id"            />
+        <result property="ruleName"      column="rule_name"     />
+        <result property="ruleCode"      column="rule_code"     />
+        <result property="ruleType"      column="rule_type"     />
+        <result property="eventType"     column="event_type"    />
+        <result property="indicatorCode" column="indicator_code"/>
+        <result property="operator"      column="operator"      />
+        <result property="thresholdValue" column="threshold_value"/>
+        <result property="alertLevel"    column="alert_level"   />
+        <result property="isActive"      column="is_active"     />
+        <result property="notifyType"    column="notify_type"   />
+        <result property="createBy"      column="create_by"     />
+        <result property="createTime"    column="create_time"   />
+        <result property="updateBy"      column="update_by"     />
+        <result property="updateTime"    column="update_time"   />
+        <result property="remark"        column="remark"        />
+    </resultMap>
+
+    <select id="selectRiskAlertRuleById" parameterType="Long" resultMap="RiskAlertRuleResult">
+        select * from risk_alert_rule where id = #{id}
+    </select>
+
+    <select id="selectRiskAlertRuleList" parameterType="com.ruoyi.risk.domain.RiskAlertRule" resultMap="RiskAlertRuleResult">
+        select * from risk_alert_rule
+        <where>
+            <if test="ruleName != null and ruleName != ''">AND rule_name like concat('%', #{ruleName}, '%')</if>
+            <if test="ruleType != null and ruleType != ''">AND rule_type = #{ruleType}</if>
+            <if test="isActive != null">AND is_active = #{isActive}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertRiskAlertRule" parameterType="com.ruoyi.risk.domain.RiskAlertRule" useGeneratedKeys="true" keyProperty="id">
+        insert into risk_alert_rule (
+            rule_name, rule_code, rule_type, event_type,
+            indicator_code, operator, threshold_value,
+            alert_level, is_active, notify_type,
+            create_by, create_time, remark
+        ) values (
+            #{ruleName}, #{ruleCode}, #{ruleType}, #{eventType},
+            #{indicatorCode}, #{operator}, #{thresholdValue},
+            #{alertLevel}, #{isActive}, #{notifyType},
+            #{createBy}, sysdate(), #{remark}
+        )
+    </insert>
+
+    <update id="updateRiskAlertRule" parameterType="com.ruoyi.risk.domain.RiskAlertRule">
+        update risk_alert_rule
+        <set>
+            <if test="ruleName != null">rule_name = #{ruleName},</if>
+            <if test="eventType != null">event_type = #{eventType},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="thresholdValue != null">threshold_value = #{thresholdValue},</if>
+            <if test="alertLevel != null">alert_level = #{alertLevel},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="notifyType != null">notify_type = #{notifyType},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_by = #{updateBy}, update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiskAlertRuleByIds" parameterType="String">
+        delete from risk_alert_rule where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <delete id="deleteRiskAlertRuleById" parameterType="Long">
+        delete from risk_alert_rule where id = #{id}
+    </delete>
+
+    <select id="selectActiveRules" resultMap="RiskAlertRuleResult">
+        select * from risk_alert_rule where is_active = 1 order by alert_level desc
+    </select>
+
+</mapper>

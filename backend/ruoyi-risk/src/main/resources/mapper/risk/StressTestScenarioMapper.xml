@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.StressTestScenarioMapper">
+    <resultMap type="com.ruoyi.risk.domain.StressTestScenario" id="StressTestScenarioResult">
+        <result property="scenarioId" column="scenario_id"/>
+        <result property="scenarioName" column="scenario_name"/>
+        <result property="scenarioType" column="scenario_type"/>
+        <result property="severity" column="severity"/>
+        <result property="description" column="description"/>
+        <result property="parametersJson" column="parameters_json"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="StressTestScenarioResult">
+        SELECT * FROM stress_test_scenario WHERE scenario_id = #{scenarioId}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.StressTestScenario" resultMap="StressTestScenarioResult">
+        SELECT * FROM stress_test_scenario
+        <where>
+            <if test="scenarioName != null and scenarioName != ''">AND scenario_name LIKE concat('%', #{scenarioName}, '%')</if>
+            <if test="scenarioType != null and scenarioType != ''">AND scenario_type = #{scenarioType}</if>
+            <if test="severity != null and severity != ''">AND severity = #{severity}</if>
+            <if test="status != null and status != ''">AND status = #{status}</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.StressTestScenario" useGeneratedKeys="true" keyProperty="scenarioId">
+        INSERT INTO stress_test_scenario (scenario_name, scenario_type, severity, description, parameters_json, status)
+        VALUES (#{scenarioName}, #{scenarioType}, #{severity}, #{description}, #{parametersJson}, #{status})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.StressTestScenario">
+        UPDATE stress_test_scenario
+        <set>
+            <if test="scenarioName != null">scenario_name = #{scenarioName},</if>
+            <if test="scenarioType != null">scenario_type = #{scenarioType},</if>
+            <if test="severity != null">severity = #{severity},</if>
+            <if test="parametersJson != null">parameters_json = #{parametersJson},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE scenario_id = #{scenarioId}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        DELETE FROM stress_test_scenario WHERE scenario_id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

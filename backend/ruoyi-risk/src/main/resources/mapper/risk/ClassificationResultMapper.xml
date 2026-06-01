@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.ClassificationResultMapper">
+    <resultMap type="com.ruoyi.risk.domain.ClassificationResult" id="ClassificationResultResult">
+        <result property="resultId" column="result_id"/>
+        <result property="loanId" column="loan_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="classifyDate" column="classify_date"/>
+        <result property="fiveLevel" column="five_level"/>
+        <result property="previousLevel" column="previous_level"/>
+        <result property="overdueDays" column="overdue_days"/>
+        <result property="outstandingBalance" column="outstanding_balance"/>
+        <result property="triggerRule" column="trigger_rule"/>
+        <result property="score" column="score"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="ClassificationResultResult">
+        SELECT * FROM classification_result WHERE result_id = #{resultId}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.ClassificationResult" resultMap="ClassificationResultResult">
+        SELECT * FROM classification_result
+        <where>
+            <if test="loanId != null">AND loan_id = #{loanId}</if>
+            <if test="companyName != null and companyName != ''">AND company_name LIKE concat('%', #{companyName}, '%')</if>
+            <if test="fiveLevel != null and fiveLevel != ''">AND five_level = #{fiveLevel}</if>
+        </where>
+        ORDER BY classify_date DESC
+    </select>
+
+    <select id="selectLatestByLoan" parameterType="Long" resultMap="ClassificationResultResult">
+        SELECT * FROM classification_result WHERE loan_id = #{loanId} ORDER BY classify_date DESC LIMIT 1
+    </select>
+
+    <select id="selectSummaryByDate" parameterType="String" resultType="java.util.Map">
+        SELECT five_level, COUNT(*) as count, SUM(outstanding_balance) as amount
+        FROM classification_result WHERE classify_date = #{classifyDate}
+        GROUP BY five_level
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.ClassificationResult" useGeneratedKeys="true" keyProperty="resultId">
+        INSERT INTO classification_result (loan_id, company_id, company_name, classify_date, five_level, previous_level, overdue_days, outstanding_balance, trigger_rule, score, remark)
+        VALUES (#{loanId}, #{companyId}, #{companyName}, #{classifyDate}, #{fiveLevel}, #{previousLevel}, #{overdueDays}, #{outstandingBalance}, #{triggerRule}, #{score}, #{remark})
+    </insert>
+
+    <delete id="deleteByIds" parameterType="String">
+        DELETE FROM classification_result WHERE result_id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

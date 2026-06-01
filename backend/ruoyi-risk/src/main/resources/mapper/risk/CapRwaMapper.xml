@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.CapRwaMapper">
+    <resultMap type="com.ruoyi.risk.domain.CapRwa" id="CapRwaResult">
+        <result property="id" column="id"/>
+        <result property="calcDate" column="calc_date"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="loanId" column="loan_id"/>
+        <result property="loanNo" column="loan_no"/>
+        <result property="exposureAmount" column="exposure_amount"/>
+        <result property="pd" column="pd"/>
+        <result property="lgd" column="lgd"/>
+        <result property="ead" column="ead"/>
+        <result property="maturity" column="maturity"/>
+        <result property="assetClass" column="asset_class"/>
+        <result property="riskWeight" column="risk_weight"/>
+        <result property="rwaAmount" column="rwa_amount"/>
+        <result property="calcMethod" column="calc_method"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="CapRwaResult">
+        select * from cap_rwa where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.CapRwa" resultMap="CapRwaResult">
+        select * from cap_rwa
+        <where>
+            <if test="calcDate != null">and calc_date = #{calcDate}</if>
+            <if test="companyId != null">and company_id = #{companyId}</if>
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="assetClass != null and assetClass != ''">and asset_class = #{assetClass}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by calc_date desc
+    </select>
+
+    <select id="selectByDate" parameterType="String" resultMap="CapRwaResult">
+        select * from cap_rwa where calc_date = #{calcDate} and status = 1
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.CapRwa" useGeneratedKeys="true" keyProperty="id">
+        insert into cap_rwa (calc_date, company_id, company_name, loan_id, loan_no, exposure_amount, pd, lgd, ead, maturity, asset_class, risk_weight, rwa_amount, calc_method, status, remark, create_by)
+        values (#{calcDate}, #{companyId}, #{companyName}, #{loanId}, #{loanNo}, #{exposureAmount}, #{pd}, #{lgd}, #{ead}, #{maturity}, #{assetClass}, #{riskWeight}, #{rwaAmount}, #{calcMethod}, #{status}, #{remark}, #{createBy})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.CapRwa">
+        update cap_rwa
+        <set>
+            <if test="calcDate != null">calc_date = #{calcDate},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="exposureAmount != null">exposure_amount = #{exposureAmount},</if>
+            <if test="pd != null">pd = #{pd},</if>
+            <if test="lgd != null">lgd = #{lgd},</if>
+            <if test="ead != null">ead = #{ead},</if>
+            <if test="riskWeight != null">risk_weight = #{riskWeight},</if>
+            <if test="rwaAmount != null">rwa_amount = #{rwaAmount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from cap_rwa where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

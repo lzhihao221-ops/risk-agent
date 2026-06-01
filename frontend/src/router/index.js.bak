@@ -1,0 +1,460 @@
+import { createWebHistory, createRouter } from 'vue-router'
+/* Layout */
+import Layout from '@/layout'
+
+/**
+ * Note: 路由配置项
+ *
+ * hidden: true                     // 当设置 true 的时候该路由不会再侧边栏出现 如401，login等页面，或者如一些编辑页面/edit/1
+ * alwaysShow: true                 // 当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
+ *                                  // 只有一个时，会将那个子路由当做根路由显示在侧边栏--如引导页面
+ *                                  // 若你想不管路由下面的 children 声明的个数都显示你的根路由
+ *                                  // 你可以设置 alwaysShow: true，这样它就会忽略之前定义的规则，一直显示根路由
+ * redirect: noRedirect             // 当设置 noRedirect 的时候该路由在面包屑导航中不可被点击
+ * name:'router-name'               // 设定路由的名字，一定要填写不然使用<keep-alive>时会出现各种问题
+ * query: '{"id": 1, "name": "ry"}' // 访问路由的默认传递参数
+ * roles: ['admin', 'common']       // 访问路由的角色权限
+ * permissions: ['a:a:a', 'b:b:b']  // 访问路由的菜单权限
+ * meta : {
+    noCache: true                   // 如果设置为true，则不会被 <keep-alive> 缓存(默认 false)
+    title: 'title'                  // 设置该路由在侧边栏和面包屑中展示的名字
+    icon: 'svg-name'                // 设置该路由的图标，对应路径src/assets/icons/svg
+    breadcrumb: false               // 如果设置为false，则不会在breadcrumb面包屑中显示
+    activeMenu: '/system/user'      // 当路由设置了该属性，则会高亮相对应的侧边栏。
+  }
+ */
+
+// 公共路由
+export const constantRoutes = [
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login'),
+    hidden: true
+  },
+  {
+    path: '/register',
+    component: () => import('@/views/register'),
+    hidden: true
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    component: () => import('@/views/error/404'),
+    hidden: true
+  },
+  {
+    path: '/401',
+    component: () => import('@/views/error/401'),
+    hidden: true
+  },
+  {
+    path: '',
+    component: Layout,
+    redirect: '/risk/dashboard',
+    children: [
+      {
+        path: '/index',
+        component: () => import('@/views/risk/dashboard/index'),
+        name: 'Index',
+        meta: { title: '首页', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/lock',
+    component: () => import('@/views/lock'),
+    hidden: true,
+    meta: { title: '锁定屏幕' }
+  },
+  // ===== 贷后风控模块 =====
+  {
+    path: '/risk',
+    component: Layout,
+    redirect: '/risk/dashboard',
+    name: 'Risk',
+    meta: { title: '贷后风控', icon: 'eye-open' },
+    alwaysShow: true,
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/risk/dashboard/index'),
+        name: 'RiskDashboard',
+        meta: { title: '风控看板', icon: 'dashboard' }
+      },
+      {
+        path: 'company',
+        component: () => import('@/views/risk/company/index'),
+        name: 'RiskCompany',
+        meta: { title: '监控企业', icon: 'peoples' }
+      },
+      {
+        path: 'company/detail/:id',
+        component: () => import('@/views/risk/company/detail'),
+        name: 'RiskCompanyDetail',
+        hidden: true,
+        meta: { title: '企业详情', activeMenu: '/risk/company' }
+      },
+      {
+        path: 'alert',
+        component: () => import('@/views/risk/alert/index'),
+        name: 'RiskAlert',
+        meta: { title: '预警中心', icon: 'warning' }
+      },
+      {
+        path: 'event',
+        component: () => import('@/views/risk/event/index'),
+        name: 'RiskEvent',
+        meta: { title: '风险事件', icon: 'form' }
+      },
+      {
+        path: 'task',
+        component: () => import('@/views/risk/task/index'),
+        name: 'RiskTask',
+        meta: { title: '排查任务', icon: 'edit' }
+      },
+      {
+        path: 'relation',
+        component: () => import('@/views/risk/relation/index'),
+        name: 'RiskRelation',
+        meta: { title: '关联图谱', icon: 'tree-table' }
+      },
+      {
+        path: 'rule',
+        component: () => import('@/views/risk/rule/index'),
+        name: 'RiskRule',
+        meta: { title: '预警规则', icon: 'lock' }
+      },
+      {
+        path: 'report',
+        component: () => import('@/views/risk/report/index'),
+        name: 'RiskReport',
+        meta: { title: '风险报告', icon: 'documentation' }
+      },
+      {
+        path: 'monitor',
+        component: () => import('@/views/risk/monitor/index'),
+        name: 'RiskMonitor',
+        meta: { title: '定时监测', icon: 'monitor' }
+      },
+      {
+        path: 'stat',
+        component: () => import('@/views/risk/stat/index'),
+        name: 'RiskStat',
+        meta: { title: '数据统计', icon: 'chart' }
+      },
+      {
+        path: 'batch',
+        component: () => import('@/views/risk/batch/index'),
+        name: 'RiskBatch',
+        meta: { title: '批量导入', icon: 'upload' }
+      },
+      {
+        path: 'config',
+        component: () => import('@/views/risk/config/index'),
+        name: 'RiskConfig',
+        meta: { title: '系统配置', icon: 'system' }
+      },
+      {
+        path: 'datasource',
+        component: () => import('@/views/risk/datasource/index'),
+        name: 'RiskDatasource',
+        meta: { title: '数据源管理', icon: 'international' }
+      },
+      {
+        path: 'message',
+        component: () => import('@/views/risk/message/index'),
+        name: 'RiskMessage',
+        meta: { title: '消息中心', icon: 'message' }
+      },
+      {
+        path: 'log',
+        component: () => import('@/views/risk/log/index'),
+        name: 'RiskLog',
+        meta: { title: '操作日志', icon: 'log' }
+      }
+    ]
+  },
+  {
+    path: '/user',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'profile/:activeTab?',
+        component: () => import('@/views/system/user/profile/index'),
+        name: 'Profile',
+        meta: { title: '个人中心', icon: 'user' }
+      }
+    ]
+  }
+]
+
+// 动态路由，基于用户权限动态去加载
+export const dynamicRoutes = [
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/risk/dashboard',
+    children: [
+      {
+        path: 'risk/dashboard',
+        component: () => import('@/views/risk/dashboard/index.vue'),
+        name: 'Dashboard',
+        meta: { title: '风控看板', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/risk',
+    component: Layout,
+    redirect: '/risk/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/risk/dashboard/index.vue'),
+        name: 'RiskDashboard',
+        meta: { title: '风控看板', icon: 'dashboard' }
+      },
+      {
+        path: 'company',
+        component: () => import('@/views/risk/company/index.vue'),
+        name: 'RiskCompany',
+        meta: { title: '监控企业', icon: 'peoples' }
+      },
+      {
+        path: 'company/detail/:id',
+        component: () => import('@/views/risk/company/detail.vue'),
+        name: 'CompanyDetail',
+        meta: { title: '企业详情', activeMenu: '/risk/company' },
+        hidden: true
+      },
+      {
+        path: 'alert',
+        component: () => import('@/views/risk/alert/index.vue'),
+        name: 'RiskAlert',
+        meta: { title: '预警中心', icon: 'warning' }
+      },
+      {
+        path: 'event',
+        component: () => import('@/views/risk/event/index.vue'),
+        name: 'RiskEvent',
+        meta: { title: '风险事件', icon: 'edit' }
+      },
+      {
+        path: 'task',
+        component: () => import('@/views/risk/task/index.vue'),
+        name: 'RiskTask',
+        meta: { title: '排查任务', icon: 'form' }
+      },
+      {
+        path: 'relation',
+        component: () => import('@/views/risk/relation/index.vue'),
+        name: 'RiskRelation',
+        meta: { title: '关联图谱', icon: 'tree' }
+      },
+      {
+        path: 'rule',
+        component: () => import('@/views/risk/rule/index.vue'),
+        name: 'RiskRule',
+        meta: { title: '预警规则', icon: 'lock' }
+      },
+      {
+        path: 'report',
+        component: () => import('@/views/risk/report/index.vue'),
+        name: 'RiskReport',
+        meta: { title: '风险报告', icon: 'documentation' }
+      },
+      {
+        path: 'monitor',
+        component: () => import('@/views/risk/monitor/index.vue'),
+        name: 'RiskMonitor',
+        meta: { title: '定时监测', icon: 'job' }
+      },
+      {
+        path: 'stat',
+        component: () => import('@/views/risk/stat/index.vue'),
+        name: 'RiskStat',
+        meta: { title: '数据统计', icon: 'chart' }
+      },
+      {
+        path: 'batch',
+        component: () => import('@/views/risk/batch/index.vue'),
+        name: 'RiskBatch',
+        meta: { title: '批量导入', icon: 'upload' }
+      },
+      {
+        path: 'config',
+        component: () => import('@/views/risk/config/index.vue'),
+        name: 'RiskConfig',
+        meta: { title: '系统配置', icon: 'edit' }
+      },
+      {
+        path: 'datasource',
+        component: () => import('@/views/risk/datasource/index.vue'),
+        name: 'RiskDatasource',
+        meta: { title: '数据源管理', icon: 'server' }
+      },
+      {
+        path: 'message',
+        component: () => import('@/views/risk/message/index.vue'),
+        name: 'RiskMessage',
+        meta: { title: '消息中心', icon: 'message' }
+      },
+      {
+        path: 'log',
+        component: () => import('@/views/risk/log/index.vue'),
+        name: 'RiskLog',
+        meta: { title: '操作日志', icon: 'log' }
+      }
+    ]
+  },
+  {
+    path: '/loan',
+    component: Layout,
+    redirect: '/loan/application',
+    children: [
+      {
+        path: 'application',
+        component: () => import('@/views/loan/application/index.vue'),
+        name: 'LoanApplication',
+        meta: { title: '贷款申请', icon: 'form' }
+      },
+      {
+        path: 'ledger',
+        component: () => import('@/views/loan/ledger/index.vue'),
+        name: 'LoanLedger',
+        meta: { title: '贷款台账', icon: 'edit' }
+      },
+      {
+        path: 'score',
+        component: () => import('@/views/loan/score/index.vue'),
+        name: 'LoanScore',
+        meta: { title: '评分抵押', icon: 'score' }
+      }
+    ]
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: constantRoutes.concat(dynamicRoutes),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  }
+})
+  {
+    path: '/system/user-auth',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:user:edit'],
+    children: [
+      {
+        path: 'role/:userId(\\d+)',
+        component: () => import('@/views/system/user/authRole'),
+        name: 'AuthRole',
+        meta: { title: '分配角色', activeMenu: '/system/user' }
+      }
+    ]
+  },
+  {
+    path: '/system/role-auth',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:role:edit'],
+    children: [
+      {
+        path: 'user/:roleId(\\d+)',
+        component: () => import('@/views/system/role/authUser'),
+        name: 'AuthUser',
+        meta: { title: '分配用户', activeMenu: '/system/role' }
+      }
+    ]
+  },
+  {
+    path: '/system/dict-data',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:dict:list'],
+    children: [
+      {
+        path: 'index/:dictId(\\d+)',
+        component: () => import('@/views/system/dict/data'),
+        name: 'Data',
+        meta: { title: '字典数据', activeMenu: '/system/dict' }
+      }
+    ]
+  },
+  {
+    path: '/monitor/job-log',
+    component: Layout,
+    hidden: true,
+    permissions: ['monitor:job:list'],
+    children: [
+      {
+        path: 'index/:jobId(\\d+)',
+        component: () => import('@/views/monitor/job/log'),
+        name: 'JobLog',
+        meta: { title: '调度日志', activeMenu: '/monitor/job' }
+      }
+    ]
+  },
+  {
+    path: '/tool/gen-edit',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:gen:edit'],
+    children: [
+      {
+        path: 'index/:tableId(\\d+)',
+        component: () => import('@/views/tool/gen/editTable'),
+        name: 'GenEdit',
+        meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
+      }
+    ]
+  },
+  // 贷前贷中模块
+  {
+    path: '/loan',
+    component: Layout,
+    redirect: '/loan/application',
+    name: 'Loan',
+    meta: { title: '信贷管理', icon: 'money' },
+    children: [
+      {
+        path: 'application',
+        component: () => import('@/views/loan/application/index'),
+        name: 'LoanApplication',
+        meta: { title: '贷款申请', icon: 'edit' }
+      },
+      {
+        path: 'ledger',
+        component: () => import('@/views/loan/ledger/index'),
+        name: 'LoanLedger',
+        meta: { title: '贷款台账', icon: 'list' }
+      },
+      {
+        path: 'score',
+        component: () => import('@/views/loan/score/index'),
+        name: 'LoanScore',
+        meta: { title: '评分抵押', icon: 'star' }
+      }
+    ]
+  }
+]
+
+export default router

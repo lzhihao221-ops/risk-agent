@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanCreditQueryMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanCreditQuery" id="CreditQueryResult">
+        <result property="id" column="id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="queryType" column="query_type"/>
+        <result property="querySource" column="query_source"/>
+        <result property="queryDate" column="query_date"/>
+        <result property="queryResult" column="query_result"/>
+        <result property="creditScore" column="credit_score"/>
+        <result property="debtAmount" column="debt_amount"/>
+        <result property="overdueCount" column="overdue_count"/>
+        <result property="queryCount6m" column="query_count_6m"/>
+        <result property="hasBadRecord" column="has_bad_record"/>
+        <result property="operatorId" column="operator_id"/>
+        <result property="operatorName" column="operator_name"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="CreditQueryResult">
+        SELECT * FROM loan_credit_query WHERE id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanCreditQuery" resultMap="CreditQueryResult">
+        SELECT * FROM loan_credit_query
+        <where>
+            <if test="companyName != null and companyName != ''">
+                AND company_name LIKE CONCAT('%', #{companyName}, '%')
+            </if>
+            <if test="queryType != null and queryType != ''">
+                AND query_type = #{queryType}
+            </if>
+            <if test="querySource != null and querySource != ''">
+                AND query_source = #{querySource}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanCreditQuery" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_credit_query (company_id, company_name, query_type, query_source, query_date,
+            query_result, credit_score, debt_amount, overdue_count, query_count_6m, has_bad_record,
+            operator_id, operator_name, status, remark)
+        VALUES (#{companyId}, #{companyName}, #{queryType}, #{querySource}, #{queryDate},
+            #{queryResult}, #{creditScore}, #{debtAmount}, #{overdueCount}, #{queryCount6m}, #{hasBadRecord},
+            #{operatorId}, #{operatorName}, #{status}, #{remark})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanCreditQuery">
+        UPDATE loan_credit_query
+        <set>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="queryType != null">query_type = #{queryType},</if>
+            <if test="querySource != null">query_source = #{querySource},</if>
+            <if test="queryDate != null">query_date = #{queryDate},</if>
+            <if test="queryResult != null">query_result = #{queryResult},</if>
+            <if test="creditScore != null">credit_score = #{creditScore},</if>
+            <if test="debtAmount != null">debt_amount = #{debtAmount},</if>
+            <if test="overdueCount != null">overdue_count = #{overdueCount},</if>
+            <if test="queryCount6m != null">query_count_6m = #{queryCount6m},</if>
+            <if test="hasBadRecord != null">has_bad_record = #{hasBadRecord},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByIds">
+        DELETE FROM loan_credit_query WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

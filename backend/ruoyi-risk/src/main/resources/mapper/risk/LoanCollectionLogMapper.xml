@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanCollectionLogMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.LoanCollectionLog" id="LoanCollectionLogResult">
+        <result property="id"               column="id"               />
+        <result property="collectionId"     column="collection_id"    />
+        <result property="loanId"           column="loan_id"          />
+        <result property="loanNo"           column="loan_no"          />
+        <result property="contactPerson"    column="contact_person"   />
+        <result property="contactPhone"     column="contact_phone"    />
+        <result property="contactType"      column="contact_type"     />
+        <result property="contactTime"      column="contact_time"     />
+        <result property="contactResult"    column="contact_result"   />
+        <result property="borrowerResponse" column="borrower_response"/>
+        <result property="operatorName"     column="operator_name"    />
+        <result property="createTime"       column="create_time"      />
+    </resultMap>
+
+    <sql id="selectVo">
+        select id, collection_id, loan_id, loan_no, contact_person, contact_phone,
+               contact_type, contact_time, contact_result, borrower_response,
+               operator_name, create_time
+        from loan_collection_log
+    </sql>
+
+    <select id="selectByCollectionId" parameterType="Long" resultMap="LoanCollectionLogResult">
+        <include refid="selectVo"/>
+        where collection_id = #{collectionId}
+        order by contact_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanCollectionLog" useGeneratedKeys="true" keyProperty="id">
+        insert into loan_collection_log (
+            <if test="collectionId != null">collection_id,</if>
+            <if test="loanId != null">loan_id,</if>
+            <if test="loanNo != null and loanNo != ''">loan_no,</if>
+            <if test="contactPerson != null and contactPerson != ''">contact_person,</if>
+            <if test="contactPhone != null and contactPhone != ''">contact_phone,</if>
+            <if test="contactType != null and contactType != ''">contact_type,</if>
+            <if test="contactTime != null">contact_time,</if>
+            <if test="contactResult != null and contactResult != ''">contact_result,</if>
+            <if test="borrowerResponse != null and borrowerResponse != ''">borrower_response,</if>
+            <if test="operatorName != null and operatorName != ''">operator_name,</if>
+            create_time
+        ) values (
+            <if test="collectionId != null">#{collectionId},</if>
+            <if test="loanId != null">#{loanId},</if>
+            <if test="loanNo != null and loanNo != ''">#{loanNo},</if>
+            <if test="contactPerson != null and contactPerson != ''">#{contactPerson},</if>
+            <if test="contactPhone != null and contactPhone != ''">#{contactPhone},</if>
+            <if test="contactType != null and contactType != ''">#{contactType},</if>
+            <if test="contactTime != null">#{contactTime},</if>
+            <if test="contactResult != null and contactResult != ''">#{contactResult},</if>
+            <if test="borrowerResponse != null and borrowerResponse != ''">#{borrowerResponse},</if>
+            <if test="operatorName != null and operatorName != ''">#{operatorName},</if>
+            sysdate()
+        )
+    </insert>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from loan_collection_log where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.StressTestResultMapper">
+    <resultMap type="com.ruoyi.risk.domain.StressTestResult" id="StressTestResultResult">
+        <result property="resultId" column="result_id"/>
+        <result property="scenarioId" column="scenario_id"/>
+        <result property="testDate" column="test_date"/>
+        <result property="portfolioType" column="portfolio_type"/>
+        <result property="baselineLoss" column="baseline_loss"/>
+        <result property="stressedLoss" column="stressed_loss"/>
+        <result property="lossIncrease" column="loss_increase"/>
+        <result property="lossIncreaseRate" column="loss_increase_rate"/>
+        <result property="capitalImpact" column="capital_impact"/>
+        <result property="capitalRatioAfter" column="capital_ratio_after"/>
+        <result property="passFail" column="pass_fail"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.StressTestResult" resultMap="StressTestResultResult">
+        SELECT r.*, s.scenario_name FROM stress_test_result r
+        LEFT JOIN stress_test_scenario s ON r.scenario_id = s.scenario_id
+        <where>
+            <if test="scenarioId != null">AND r.scenario_id = #{scenarioId}</if>
+            <if test="passFail != null and passFail != ''">AND r.pass_fail = #{passFail}</if>
+        </where>
+        ORDER BY r.test_date DESC
+    </select>
+
+    <select id="selectByDate" parameterType="String" resultMap="StressTestResultResult">
+        SELECT r.*, s.scenario_name FROM stress_test_result r
+        LEFT JOIN stress_test_scenario s ON r.scenario_id = s.scenario_id
+        WHERE r.test_date = #{testDate} ORDER BY r.result_id
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.StressTestResult" useGeneratedKeys="true" keyProperty="resultId">
+        INSERT INTO stress_test_result (scenario_id, test_date, portfolio_type, baseline_loss, stressed_loss, loss_increase, loss_increase_rate, capital_impact, capital_ratio_after, pass_fail)
+        VALUES (#{scenarioId}, #{testDate}, #{portfolioType}, #{baselineLoss}, #{stressedLoss}, #{lossIncrease}, #{lossIncreaseRate}, #{capitalImpact}, #{capitalRatioAfter}, #{passFail})
+    </insert>
+
+    <delete id="deleteByIds" parameterType="String">
+        DELETE FROM stress_test_result WHERE result_id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

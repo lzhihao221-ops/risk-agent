@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanApplicationMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanApplication" id="LoanAppResult">
+        <result property="id" column="id"/><result property="appNo" column="app_no"/><result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/><result property="productType" column="product_type"/>
+        <result property="loanAmount" column="loan_amount"/><result property="loanTerm" column="loan_term"/>
+        <result property="loanPurpose" column="loan_purpose"/><result property="interestRate" column="interest_rate"/>
+        <result property="repaymentType" column="repayment_type"/><result property="guaranteeType" column="guarantee_type"/>
+        <result property="collateralDesc" column="collateral_desc"/><result property="applicantName" column="applicant_name"/>
+        <result property="appStatus" column="app_status"/><result property="riskScore" column="risk_score"/>
+        <result property="riskLevel" column="risk_level"/><result property="rejectReason" column="reject_reason"/>
+        <result property="submitTime" column="submit_time"/><result property="approveTime" column="approve_time"/>
+        <result property="createTime" column="create_time"/><result property="remark" column="remark"/>
+    </resultMap>
+    <select id="selectById" parameterType="Long" resultMap="LoanAppResult">SELECT * FROM loan_application WHERE id=#{id}</select>
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanApplication" resultMap="LoanAppResult">
+        SELECT * FROM loan_application <where><if test="companyName!=null and companyName!=''">AND company_name LIKE CONCAT('%',#{companyName},'%')</if><if test="appStatus!=null">AND app_status=#{appStatus}</if><if test="productType!=null and productType!=''">AND product_type=#{productType}</if></where> ORDER BY create_time DESC
+    </select>
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanApplication" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_application (app_no,company_id,company_name,product_type,loan_amount,loan_term,loan_purpose,interest_rate,repayment_type,guarantee_type,collateral_desc,app_status,risk_score,risk_level,submit_time,remark,create_by) VALUES (#{appNo},#{companyId},#{companyName},#{productType},#{loanAmount},#{loanTerm},#{loanPurpose},#{interestRate},#{repaymentType},#{guaranteeType},#{collateralDesc},#{appStatus},#{riskScore},#{riskLevel},#{submitTime},#{remark},#{createBy})
+    </insert>
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanApplication">
+        UPDATE loan_application <set><if test="appStatus!=null">app_status=#{appStatus},</if><if test="rejectReason!=null">reject_reason=#{rejectReason},</if><if test="approveTime!=null">approve_time=#{approveTime},</if><if test="riskScore!=null">risk_score=#{riskScore},</if><if test="riskLevel!=null">risk_level=#{riskLevel},</if><if test="remark!=null">remark=#{remark},</if></set> WHERE id=#{id}
+    </update>
+    <delete id="deleteByIds">DELETE FROM loan_application WHERE id IN <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach></delete>
+    <select id="selectStatusStats" resultType="java.util.Map">SELECT app_status as status, COUNT(*) as count FROM loan_application GROUP BY app_status</select>
+    <select id="selectTypeStats" resultType="java.util.Map">SELECT product_type as type, COUNT(*) as count FROM loan_application GROUP BY product_type</select>
+</mapper>

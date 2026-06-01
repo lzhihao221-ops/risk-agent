@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.PdScoreRecordMapper">
+    <resultMap type="com.ruoyi.risk.domain.PdScoreRecord" id="PdScoreRecordResult">
+        <result property="scoreId" column="score_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="loanId" column="loan_id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="scoreDate" column="score_date"/>
+        <result property="rawScore" column="raw_score"/>
+        <result property="probability" column="probability"/>
+        <result property="ratingGrade" column="rating_grade"/>
+        <result property="scoreLevel" column="score_level"/>
+        <result property="variableDetail" column="variable_detail"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="PdScoreRecordResult">
+        SELECT * FROM pd_score_record WHERE score_id = #{scoreId}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.PdScoreRecord" resultMap="PdScoreRecordResult">
+        SELECT * FROM pd_score_record
+        <where>
+            <if test="companyId != null">AND company_id = #{companyId}</if>
+            <if test="companyName != null and companyName != ''">AND company_name LIKE concat('%', #{companyName}, '%')</if>
+            <if test="modelId != null">AND model_id = #{modelId}</if>
+            <if test="ratingGrade != null and ratingGrade != ''">AND rating_grade = #{ratingGrade}</if>
+        </where>
+        ORDER BY score_date DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.PdScoreRecord" useGeneratedKeys="true" keyProperty="scoreId">
+        INSERT INTO pd_score_record (company_id, company_name, loan_id, model_id, score_date, raw_score, probability, rating_grade, score_level, variable_detail)
+        VALUES (#{companyId}, #{companyName}, #{loanId}, #{modelId}, #{scoreDate}, #{rawScore}, #{probability}, #{ratingGrade}, #{scoreLevel}, #{variableDetail})
+    </insert>
+
+    <delete id="deleteByIds" parameterType="String">
+        DELETE FROM pd_score_record WHERE score_id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

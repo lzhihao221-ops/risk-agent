@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.CapProvisionMapper">
+    <resultMap type="com.ruoyi.risk.domain.CapProvision" id="CapProvisionResult">
+        <result property="id" column="id"/>
+        <result property="calcDate" column="calc_date"/>
+        <result property="loanId" column="loan_id"/>
+        <result property="loanNo" column="loan_no"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="fiveCategory" column="five_category"/>
+        <result property="provisionType" column="provision_type"/>
+        <result property="carryingAmount" column="carrying_amount"/>
+        <result property="provisionRate" column="provision_rate"/>
+        <result property="provisionAmount" column="provision_amount"/>
+        <result property="accumulatedProvision" column="accumulated_provision"/>
+        <result property="shortfall" column="shortfall"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="CapProvisionResult">
+        select * from cap_provision where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.CapProvision" resultMap="CapProvisionResult">
+        select * from cap_provision
+        <where>
+            <if test="calcDate != null">and calc_date = #{calcDate}</if>
+            <if test="companyId != null">and company_id = #{companyId}</if>
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="fiveCategory != null">and five_category = #{fiveCategory}</if>
+            <if test="provisionType != null and provisionType != ''">and provision_type = #{provisionType}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by calc_date desc
+    </select>
+
+    <select id="selectByDate" parameterType="String" resultMap="CapProvisionResult">
+        select * from cap_provision where calc_date = #{calcDate} and status = 1
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.CapProvision" useGeneratedKeys="true" keyProperty="id">
+        insert into cap_provision (calc_date, loan_id, loan_no, company_id, company_name, five_category, provision_type, carrying_amount, provision_rate, provision_amount, accumulated_provision, shortfall, status, remark, create_by)
+        values (#{calcDate}, #{loanId}, #{loanNo}, #{companyId}, #{companyName}, #{fiveCategory}, #{provisionType}, #{carryingAmount}, #{provisionRate}, #{provisionAmount}, #{accumulatedProvision}, #{shortfall}, #{status}, #{remark}, #{createBy})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.CapProvision">
+        update cap_provision
+        <set>
+            <if test="provisionAmount != null">provision_amount = #{provisionAmount},</if>
+            <if test="accumulatedProvision != null">accumulated_provision = #{accumulatedProvision},</if>
+            <if test="shortfall != null">shortfall = #{shortfall},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from cap_provision where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

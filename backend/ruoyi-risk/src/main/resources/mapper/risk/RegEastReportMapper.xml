@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RegEastReportMapper">
+    <resultMap type="com.ruoyi.risk.domain.RegEastReport" id="RegEastReportResult">
+        <result property="id" column="id"/>
+        <result property="reportPeriod" column="report_period"/>
+        <result property="reportDate" column="report_date"/>
+        <result property="dataType" column="data_type"/>
+        <result property="dataTable" column="data_table"/>
+        <result property="recordCount" column="record_count"/>
+        <result property="fileName" column="file_name"/>
+        <result property="filePath" column="file_path"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="checkResult" column="check_result"/>
+        <result property="checkStatus" column="check_status"/>
+        <result property="status" column="status"/>
+        <result property="generateUser" column="generate_user"/>
+        <result property="submitUser" column="submit_user"/>
+        <result property="submitTime" column="submit_time"/>
+        <result property="rejectReason" column="reject_reason"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="RegEastReportResult">
+        select * from reg_east_report where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.RegEastReport" resultMap="RegEastReportResult">
+        select * from reg_east_report
+        <where>
+            <if test="reportPeriod != null and reportPeriod != ''">and report_period = #{reportPeriod}</if>
+            <if test="dataType != null and dataType != ''">and data_type = #{dataType}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by report_period desc, data_type
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.RegEastReport" useGeneratedKeys="true" keyProperty="id">
+        insert into reg_east_report (report_period, report_date, data_type, data_table, record_count, file_name, file_path, file_size, check_result, check_status, status, generate_user, submit_user, submit_time, reject_reason, remark, create_by)
+        values (#{reportPeriod}, #{reportDate}, #{dataType}, #{dataTable}, #{recordCount}, #{fileName}, #{filePath}, #{fileSize}, #{checkResult}, #{checkStatus}, #{status}, #{generateUser}, #{submitUser}, #{submitTime}, #{rejectReason}, #{remark}, #{createBy})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.RegEastReport">
+        update reg_east_report
+        <set>
+            <if test="recordCount != null">record_count = #{recordCount},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="checkResult != null">check_result = #{checkResult},</if>
+            <if test="checkStatus != null">check_status = #{checkStatus},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="submitUser != null">submit_user = #{submitUser},</if>
+            <if test="submitTime != null">submit_time = #{submitTime},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from reg_east_report where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

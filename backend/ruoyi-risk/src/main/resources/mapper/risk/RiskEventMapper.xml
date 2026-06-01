@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RiskEventMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.RiskEvent" id="RiskEventResult">
+        <result property="id"          column="id"          />
+        <result property="companyId"   column="company_id"  />
+        <result property="eventType"   column="event_type"  />
+        <result property="eventTitle"  column="event_title" />
+        <result property="eventContent" column="event_content"/>
+        <result property="eventDate"   column="event_date"  />
+        <result property="amount"      column="amount"      />
+        <result property="severity"    column="severity"    />
+        <result property="isRead"      column="is_read"     />
+        <result property="isHandled"   column="is_handled"  />
+        <result property="dataSource"  column="data_source" />
+        <result property="externalId"  column="external_id" />
+        <result property="createTime"  column="create_time" />
+        <result property="companyName" column="company_name"/>
+    </resultMap>
+
+    <select id="selectRiskEventById" parameterType="Long" resultMap="RiskEventResult">
+        select e.*, c.company_name from risk_event e
+        left join risk_company c on e.company_id = c.id
+        where e.id = #{id}
+    </select>
+
+    <select id="selectRiskEventList" parameterType="com.ruoyi.risk.domain.RiskEvent" resultMap="RiskEventResult">
+        select e.*, c.company_name from risk_event e
+        left join risk_company c on e.company_id = c.id
+        <where>
+            <if test="companyId != null">AND e.company_id = #{companyId}</if>
+            <if test="eventType != null and eventType != ''">AND e.event_type = #{eventType}</if>
+            <if test="severity != null">AND e.severity = #{severity}</if>
+            <if test="isRead != null">AND e.is_read = #{isRead}</if>
+            <if test="isHandled != null">AND e.is_handled = #{isHandled}</if>
+        </where>
+        order by e.create_time desc
+    </select>
+
+    <insert id="insertRiskEvent" parameterType="com.ruoyi.risk.domain.RiskEvent" useGeneratedKeys="true" keyProperty="id">
+        insert into risk_event (
+            company_id, event_type, event_title, event_content,
+            event_date, amount, severity, is_read, is_handled,
+            data_source, external_id, create_time
+        ) values (
+            #{companyId}, #{eventType}, #{eventTitle}, #{eventContent},
+            #{eventDate}, #{amount}, #{severity}, #{isRead}, #{isHandled},
+            #{dataSource}, #{externalId}, sysdate()
+        )
+    </insert>
+
+    <update id="updateRiskEvent" parameterType="com.ruoyi.risk.domain.RiskEvent">
+        update risk_event
+        <set>
+            <if test="isRead != null">is_read = #{isRead},</if>
+            <if test="isHandled != null">is_handled = #{isHandled},</if>
+            <if test="severity != null">severity = #{severity},</if>
+            <if test="eventContent != null">event_content = #{eventContent},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiskEventByIds" parameterType="String">
+        delete from risk_event where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <select id="selectByCompanyId" parameterType="Long" resultMap="RiskEventResult">
+        select * from risk_event where company_id = #{companyId} order by event_date desc
+    </select>
+
+    <select id="selectEventTypeStats" resultType="java.util.Map">
+        SELECT event_type as eventType, COUNT(*) as count
+        FROM risk_event
+        GROUP BY event_type
+        ORDER BY count DESC
+    </select>
+
+    <select id="selectDailyAlertStats" parameterType="int" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(event_date, '%m-%d') as date,
+            COUNT(*) as count
+        FROM risk_event
+        WHERE event_date >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+        GROUP BY DATE_FORMAT(event_date, '%m-%d')
+        ORDER BY date
+    </select>
+
+    <select id="selectUnreadCount" resultType="int">
+        SELECT COUNT(*) FROM risk_event WHERE is_read = 0
+    </select>
+
+</mapper>

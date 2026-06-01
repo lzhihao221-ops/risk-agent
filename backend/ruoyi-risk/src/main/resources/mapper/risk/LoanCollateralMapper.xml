@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanCollateralMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanCollateral" id="CollateralResult">
+        <result property="id" column="id"/><result property="companyId" column="company_id"/><result property="appId" column="app_id"/>
+        <result property="collateralType" column="collateral_type"/><result property="collateralName" column="collateral_name"/>
+        <result property="certNo" column="cert_no"/><result property="location" column="location"/>
+        <result property="evalValue" column="eval_value"/><result property="pledgeValue" column="pledge_value"/>
+        <result property="pledgeRatio" column="pledge_ratio"/><result property="evalDate" column="eval_date"/>
+        <result property="evalOrg" column="eval_org"/><result property="status" column="status"/>
+    </resultMap>
+    <select id="selectById" parameterType="Long" resultMap="CollateralResult">SELECT * FROM loan_collateral WHERE id=#{id}</select>
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanCollateral" resultMap="CollateralResult">SELECT * FROM loan_collateral WHERE status=1 ORDER BY create_time DESC</select>
+    <select id="selectByCompanyId" parameterType="Long" resultMap="CollateralResult">SELECT * FROM loan_collateral WHERE company_id=#{companyId} AND status=1</select>
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanCollateral" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_collateral (company_id,app_id,collateral_type,collateral_name,cert_no,location,eval_value,pledge_value,pledge_ratio,eval_date,eval_org,status,create_by) VALUES (#{companyId},#{appId},#{collateralType},#{collateralName},#{certNo},#{location},#{evalValue},#{pledgeValue},#{pledgeRatio},#{evalDate},#{evalOrg},#{status},#{createBy})
+    </insert>
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanCollateral">
+        UPDATE loan_collateral <set><if test="status!=null">status=#{status},</if></set> WHERE id=#{id}
+    </update>
+</mapper>

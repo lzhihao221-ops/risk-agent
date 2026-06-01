@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.VarCalculationMapper">
+    <resultMap type="com.ruoyi.risk.domain.VarCalculation" id="VarCalculationResult">
+        <result property="varId" column="var_id"/>
+        <result property="calcDate" column="calc_date"/>
+        <result property="portfolioType" column="portfolio_type"/>
+        <result property="method" column="method"/>
+        <result property="confidenceLevel" column="confidence_level"/>
+        <result property="timeHorizon" column="time_horizon"/>
+        <result property="varAmount" column="var_amount"/>
+        <result property="cvarAmount" column="cvar_amount"/>
+        <result property="meanReturn" column="mean_return"/>
+        <result property="volatility" column="volatility"/>
+        <result property="skewness" column="skewness"/>
+        <result property="kurtosis" column="kurtosis"/>
+        <result property="sampleSize" column="sample_size"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.VarCalculation" resultMap="VarCalculationResult">
+        SELECT * FROM var_calculation
+        <where>
+            <if test="method != null and method != ''">AND method = #{method}</if>
+            <if test="portfolioType != null and portfolioType != ''">AND portfolio_type = #{portfolioType}</if>
+        </where>
+        ORDER BY calc_date DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.VarCalculation" useGeneratedKeys="true" keyProperty="varId">
+        INSERT INTO var_calculation (calc_date, portfolio_type, method, confidence_level, time_horizon, var_amount, cvar_amount, mean_return, volatility, skewness, kurtosis, sample_size)
+        VALUES (#{calcDate}, #{portfolioType}, #{method}, #{confidenceLevel}, #{timeHorizon}, #{varAmount}, #{cvarAmount}, #{meanReturn}, #{volatility}, #{skewness}, #{kurtosis}, #{sampleSize})
+    </insert>
+
+    <delete id="deleteByIds" parameterType="String">
+        DELETE FROM var_calculation WHERE var_id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanCollectionMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.LoanCollection" id="LoanCollectionResult">
+        <result property="id"              column="id"              />
+        <result property="loanId"          column="loan_id"         />
+        <result property="loanNo"          column="loan_no"         />
+        <result property="companyId"       column="company_id"      />
+        <result property="companyName"     column="company_name"    />
+        <result property="overdueAmount"   column="overdue_amount"  />
+        <result property="overdueDays"     column="overdue_days"    />
+        <result property="collectionType"  column="collection_type" />
+        <result property="collectionDate"  column="collection_date" />
+        <result property="collectorName"   column="collector_name"  />
+        <result property="collectionResult" column="collection_result" />
+        <result property="nextAction"      column="next_action"     />
+        <result property="nextDate"        column="next_date"       />
+        <result property="promiseAmount"   column="promise_amount"  />
+        <result property="promiseDate"     column="promise_date"    />
+        <result property="status"          column="status"          />
+        <result property="remark"          column="remark"          />
+        <result property="createBy"        column="create_by"       />
+        <result property="createTime"      column="create_time"     />
+        <result property="updateBy"        column="update_by"       />
+        <result property="updateTime"      column="update_time"     />
+    </resultMap>
+
+    <sql id="selectVo">
+        select id, loan_id, loan_no, company_id, company_name, overdue_amount, overdue_days,
+               collection_type, collection_date, collector_name, collection_result,
+               next_action, next_date, promise_amount, promise_date, status, remark,
+               create_by, create_time, update_by, update_time
+        from loan_collection
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="LoanCollectionResult">
+        <include refid="selectVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanCollection" resultMap="LoanCollectionResult">
+        <include refid="selectVo"/>
+        <where>
+            <if test="loanNo != null and loanNo != ''">and loan_no like concat('%', #{loanNo}, '%')</if>
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="collectionType != null and collectionType != ''">and collection_type = #{collectionType}</if>
+            <if test="collectorName != null and collectorName != ''">and collector_name like concat('%', #{collectorName}, '%')</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanCollection" useGeneratedKeys="true" keyProperty="id">
+        insert into loan_collection (
+            <if test="loanId != null">loan_id,</if>
+            <if test="loanNo != null and loanNo != ''">loan_no,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null and companyName != ''">company_name,</if>
+            <if test="overdueAmount != null">overdue_amount,</if>
+            <if test="overdueDays != null">overdue_days,</if>
+            <if test="collectionType != null and collectionType != ''">collection_type,</if>
+            <if test="collectionDate != null">collection_date,</if>
+            <if test="collectorName != null and collectorName != ''">collector_name,</if>
+            <if test="collectionResult != null and collectionResult != ''">collection_result,</if>
+            <if test="nextAction != null and nextAction != ''">next_action,</if>
+            <if test="nextDate != null">next_date,</if>
+            <if test="promiseAmount != null">promise_amount,</if>
+            <if test="promiseDate != null">promise_date,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time
+        ) values (
+            <if test="loanId != null">#{loanId},</if>
+            <if test="loanNo != null and loanNo != ''">#{loanNo},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null and companyName != ''">#{companyName},</if>
+            <if test="overdueAmount != null">#{overdueAmount},</if>
+            <if test="overdueDays != null">#{overdueDays},</if>
+            <if test="collectionType != null and collectionType != ''">#{collectionType},</if>
+            <if test="collectionDate != null">#{collectionDate},</if>
+            <if test="collectorName != null and collectorName != ''">#{collectorName},</if>
+            <if test="collectionResult != null and collectionResult != ''">#{collectionResult},</if>
+            <if test="nextAction != null and nextAction != ''">#{nextAction},</if>
+            <if test="nextDate != null">#{nextDate},</if>
+            <if test="promiseAmount != null">#{promiseAmount},</if>
+            <if test="promiseDate != null">#{promiseDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanCollection">
+        update loan_collection
+        <set>
+            <if test="loanId != null">loan_id = #{loanId},</if>
+            <if test="loanNo != null and loanNo != ''">loan_no = #{loanNo},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null and companyName != ''">company_name = #{companyName},</if>
+            <if test="overdueAmount != null">overdue_amount = #{overdueAmount},</if>
+            <if test="overdueDays != null">overdue_days = #{overdueDays},</if>
+            <if test="collectionType != null and collectionType != ''">collection_type = #{collectionType},</if>
+            <if test="collectionDate != null">collection_date = #{collectionDate},</if>
+            <if test="collectorName != null and collectorName != ''">collector_name = #{collectorName},</if>
+            <if test="collectionResult != null and collectionResult != ''">collection_result = #{collectionResult},</if>
+            <if test="nextAction != null and nextAction != ''">next_action = #{nextAction},</if>
+            <if test="nextDate != null">next_date = #{nextDate},</if>
+            <if test="promiseAmount != null">promise_amount = #{promiseAmount},</if>
+            <if test="promiseDate != null">promise_date = #{promiseDate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from loan_collection where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

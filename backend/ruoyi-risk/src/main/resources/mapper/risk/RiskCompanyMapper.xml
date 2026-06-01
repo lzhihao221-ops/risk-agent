@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RiskCompanyMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.RiskCompany" id="RiskCompanyResult">
+        <result property="id"            column="id"            />
+        <result property="companyName"   column="company_name"  />
+        <result property="creditCode"    column="credit_code"   />
+        <result property="legalPerson"   column="legal_person"  />
+        <result property="regCapital"    column="reg_capital"   />
+        <result property="establishDate" column="establish_date"/>
+        <result property="industry"      column="industry"      />
+        <result property="province"      column="province"      />
+        <result property="city"          column="city"          />
+        <result property="district"      column="district"      />
+        <result property="address"       column="address"       />
+        <result property="businessScope" column="business_scope"/>
+        <result property="status"        column="status"        />
+        <result property="riskLevel"     column="risk_level"    />
+        <result property="riskScore"     column="risk_score"    />
+        <result property="lastScanTime"  column="last_scan_time"/>
+        <result property="createBy"      column="create_by"     />
+        <result property="createTime"    column="create_time"   />
+        <result property="updateBy"      column="update_by"     />
+        <result property="updateTime"    column="update_time"   />
+        <result property="remark"        column="remark"        />
+    </resultMap>
+
+    <select id="selectRiskCompanyById" parameterType="Long" resultMap="RiskCompanyResult">
+        select * from risk_company where id = #{id}
+    </select>
+
+    <select id="selectRiskCompanyList" parameterType="com.ruoyi.risk.domain.RiskCompany" resultMap="RiskCompanyResult">
+        select * from risk_company
+        <where>
+            <if test="companyName != null and companyName != ''">
+                AND company_name like concat('%', #{companyName}, '%')
+            </if>
+            <if test="creditCode != null and creditCode != ''">
+                AND credit_code = #{creditCode}
+            </if>
+            <if test="industry != null and industry != ''">
+                AND industry = #{industry}
+            </if>
+            <if test="city != null and city != ''">
+                AND city = #{city}
+            </if>
+            <if test="riskLevel != null">
+                AND risk_level = #{riskLevel}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insertRiskCompany" parameterType="com.ruoyi.risk.domain.RiskCompany" useGeneratedKeys="true" keyProperty="id">
+        insert into risk_company (
+            company_name, credit_code, legal_person, reg_capital,
+            establish_date, industry, province, city, district,
+            address, business_scope, status, risk_level, risk_score,
+            create_by, create_time, remark
+        ) values (
+            #{companyName}, #{creditCode}, #{legalPerson}, #{regCapital},
+            #{establishDate}, #{industry}, #{province}, #{city}, #{district},
+            #{address}, #{businessScope}, #{status}, #{riskLevel}, #{riskScore},
+            #{createBy}, sysdate(), #{remark}
+        )
+    </insert>
+
+    <update id="updateRiskCompany" parameterType="com.ruoyi.risk.domain.RiskCompany">
+        update risk_company
+        <set>
+            <if test="companyName != null">company_name = #{companyName},</if>
+            <if test="legalPerson != null">legal_person = #{legalPerson},</if>
+            <if test="regCapital != null">reg_capital = #{regCapital},</if>
+            <if test="industry != null">industry = #{industry},</if>
+            <if test="province != null">province = #{province},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="riskLevel != null">risk_level = #{riskLevel},</if>
+            <if test="riskScore != null">risk_score = #{riskScore},</if>
+            <if test="lastScanTime != null">last_scan_time = #{lastScanTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_by = #{updateBy}, update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiskCompanyByIds" parameterType="String">
+        delete from risk_company where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByCreditCode" parameterType="String" resultMap="RiskCompanyResult">
+        select * from risk_company where credit_code = #{creditCode} limit 1
+    </select>
+
+    <select id="selectRiskLevelStats" resultType="java.util.Map">
+        SELECT
+            risk_level as riskLevel,
+            COUNT(*) as count
+        FROM risk_company
+        GROUP BY risk_level
+        ORDER BY risk_level
+    </select>
+
+    <select id="selectHighRiskCompanies" parameterType="int" resultMap="RiskCompanyResult">
+        select * from risk_company
+        where risk_level >= 3
+        order by risk_score desc
+        limit #{limit}
+    </select>
+
+</mapper>

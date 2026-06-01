@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanLedgerMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanLedger" id="LedgerResult">
+        <result property="id" column="id"/><result property="loanNo" column="loan_no"/><result property="appNo" column="app_no"/>
+        <result property="companyId" column="company_id"/><result property="companyName" column="company_name"/>
+        <result property="productType" column="product_type"/><result property="loanAmount" column="loan_amount"/>
+        <result property="loanBalance" column="loan_balance"/><result property="interestRate" column="interest_rate"/>
+        <result property="loanTerm" column="loan_term"/><result property="loanStartDate" column="loan_start_date"/>
+        <result property="loanEndDate" column="loan_end_date"/><result property="repaymentType" column="repayment_type"/>
+        <result property="guaranteeType" column="guarantee_type"/><result property="fiveCategory" column="five_category"/>
+        <result property="overdueDays" column="overdue_days"/><result property="overdueAmount" column="overdue_amount"/>
+        <result property="status" column="status"/><result property="managerName" column="manager_name"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <select id="selectById" parameterType="Long" resultMap="LedgerResult">SELECT * FROM loan_ledger WHERE id=#{id}</select>
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanLedger" resultMap="LedgerResult">
+        SELECT * FROM loan_ledger <where><if test="companyName!=null and companyName!=''">AND company_name LIKE CONCAT('%',#{companyName},'%')</if><if test="status!=null">AND status=#{status}</if><if test="fiveCategory!=null">AND five_category=#{fiveCategory}</if></where> ORDER BY create_time DESC
+    </select>
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanLedger" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_ledger (loan_no,app_id,app_no,company_id,company_name,product_type,loan_amount,loan_balance,interest_rate,loan_term,loan_start_date,loan_end_date,repayment_type,guarantee_type,five_category,status,manager_name,create_by) VALUES (#{loanNo},#{appId},#{appNo},#{companyId},#{companyName},#{productType},#{loanAmount},#{loanBalance},#{interestRate},#{loanTerm},#{loanStartDate},#{loanEndDate},#{repaymentType},#{guaranteeType},#{fiveCategory},#{status},#{managerName},#{createBy})
+    </insert>
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanLedger">
+        UPDATE loan_ledger <set><if test="loanBalance!=null">loan_balance=#{loanBalance},</if><if test="fiveCategory!=null">five_category=#{fiveCategory},</if><if test="overdueDays!=null">overdue_days=#{overdueDays},</if><if test="overdueAmount!=null">overdue_amount=#{overdueAmount},</if><if test="status!=null">status=#{status},</if></set> WHERE id=#{id}
+    </update>
+    <delete id="deleteByIds">DELETE FROM loan_ledger WHERE id IN <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach></delete>
+    <select id="selectCategoryStats" resultType="java.util.Map">SELECT five_category as category, COUNT(*) as count, SUM(loan_amount) as totalAmount FROM loan_ledger GROUP BY five_category</select>
+    <select id="selectOverdueStats" resultType="java.util.Map">SELECT COUNT(*) as total, SUM(CASE WHEN overdue_days>0 THEN 1 ELSE 0 END) as overdueCount, SUM(overdue_amount) as overdueAmount FROM loan_ledger</select>
+    <select id="selectSummary" resultType="java.util.Map">SELECT COUNT(*) as loanCount, SUM(loan_amount) as totalAmount, SUM(loan_balance) as totalBalance, AVG(interest_rate) as avgRate FROM loan_ledger WHERE status>0</select>
+</mapper>

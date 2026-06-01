@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanCreditApprovalMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanCreditApproval" id="CreditApprovalResult">
+        <result property="id" column="id"/>
+        <result property="appId" column="app_id"/>
+        <result property="appNo" column="app_no"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="creditLine" column="credit_line"/>
+        <result property="creditPeriod" column="credit_period"/>
+        <result property="creditRate" column="credit_rate"/>
+        <result property="creditCondition" column="credit_condition"/>
+        <result property="approvalStatus" column="approval_status"/>
+        <result property="approveLevel" column="approve_level"/>
+        <result property="approveUser" column="approve_user"/>
+        <result property="approveOpinion" column="approve_opinion"/>
+        <result property="approveTime" column="approve_time"/>
+        <result property="expireDate" column="expire_date"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="CreditApprovalResult">
+        SELECT * FROM loan_credit_approval WHERE id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanCreditApproval" resultMap="CreditApprovalResult">
+        SELECT * FROM loan_credit_approval
+        <where>
+            <if test="appNo != null and appNo != ''">
+                AND app_no LIKE CONCAT('%', #{appNo}, '%')
+            </if>
+            <if test="companyName != null and companyName != ''">
+                AND company_name LIKE CONCAT('%', #{companyName}, '%')
+            </if>
+            <if test="approvalStatus != null">
+                AND approval_status = #{approvalStatus}
+            </if>
+            <if test="appId != null">
+                AND app_id = #{appId}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanCreditApproval" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_credit_approval (app_id, app_no, company_id, company_name, credit_line, credit_period,
+            credit_rate, credit_condition, approval_status, approve_level, approve_user, approve_opinion,
+            approve_time, expire_date)
+        VALUES (#{appId}, #{appNo}, #{companyId}, #{companyName}, #{creditLine}, #{creditPeriod},
+            #{creditRate}, #{creditCondition}, #{approvalStatus}, #{approveLevel}, #{approveUser}, #{approveOpinion},
+            #{approveTime}, #{expireDate})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanCreditApproval">
+        UPDATE loan_credit_approval
+        <set>
+            <if test="creditLine != null">credit_line = #{creditLine},</if>
+            <if test="creditPeriod != null">credit_period = #{creditPeriod},</if>
+            <if test="creditRate != null">credit_rate = #{creditRate},</if>
+            <if test="creditCondition != null">credit_condition = #{creditCondition},</if>
+            <if test="approvalStatus != null">approval_status = #{approvalStatus},</if>
+            <if test="approveLevel != null">approve_level = #{approveLevel},</if>
+            <if test="approveUser != null">approve_user = #{approveUser},</if>
+            <if test="approveOpinion != null">approve_opinion = #{approveOpinion},</if>
+            <if test="approveTime != null">approve_time = #{approveTime},</if>
+            <if test="expireDate != null">expire_date = #{expireDate},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByIds">
+        DELETE FROM loan_credit_approval WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

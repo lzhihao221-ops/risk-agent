@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+target/
+.venv/
+__pycache__/
+
+# Build output
+dist/
+*.jar
+*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Environment
+.env
+.env*
+*.local
+
+# System
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RiskAlertLogMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.RiskAlertLog" id="RiskAlertLogResult">
+        <result property="id"           column="id"           />
+        <result property="ruleId"       column="rule_id"      />
+        <result property="companyId"    column="company_id"   />
+        <result property="eventId"      column="event_id"     />
+        <result property="alertLevel"   column="alert_level"  />
+        <result property="alertTitle"   column="alert_title"  />
+        <result property="alertContent" column="alert_content"/>
+        <result property="isNotified"   column="is_notified"  />
+        <result property="notifyTime"   column="notify_time"  />
+        <result property="isHandled"    column="is_handled"   />
+        <result property="handlerId"    column="handler_id"   />
+        <result property="handlerName"  column="handler_name" />
+        <result property="handleTime"   column="handle_time"  />
+        <result property="handleResult" column="handle_result"/>
+        <result property="createTime"   column="create_time"  />
+        <result property="companyName"  column="company_name" />
+    </resultMap>
+
+    <select id="selectRiskAlertLogById" parameterType="Long" resultMap="RiskAlertLogResult">
+        select a.*, c.company_name from risk_alert_log a
+        left join risk_company c on a.company_id = c.id
+        where a.id = #{id}
+    </select>
+
+    <select id="selectRiskAlertLogList" parameterType="com.ruoyi.risk.domain.RiskAlertLog" resultMap="RiskAlertLogResult">
+        select a.*, c.company_name from risk_alert_log a
+        left join risk_company c on a.company_id = c.id
+        <where>
+            <if test="companyId != null">AND a.company_id = #{companyId}</if>
+            <if test="alertLevel != null">AND a.alert_level = #{alertLevel}</if>
+            <if test="isHandled != null">AND a.is_handled = #{isHandled}</if>
+            <if test="isNotified != null">AND a.is_notified = #{isNotified}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <insert id="insertRiskAlertLog" parameterType="com.ruoyi.risk.domain.RiskAlertLog" useGeneratedKeys="true" keyProperty="id">
+        insert into risk_alert_log (
+            rule_id, company_id, event_id, alert_level,
+            alert_title, alert_content, is_notified, create_time
+        ) values (
+            #{ruleId}, #{companyId}, #{eventId}, #{alertLevel},
+            #{alertTitle}, #{alertContent}, #{isNotified}, sysdate()
+        )
+    </insert>
+
+    <update id="updateRiskAlertLog" parameterType="com.ruoyi.risk.domain.RiskAlertLog">
+        update risk_alert_log
+        <set>
+            <if test="isHandled != null">is_handled = #{isHandled},</if>
+            <if test="handlerId != null">handler_id = #{handlerId},</if>
+            <if test="handlerName != null">handler_name = #{handlerName},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="handleResult != null">handle_result = #{handleResult},</if>
+            <if test="isNotified != null">is_notified = #{isNotified},</if>
+            <if test="notifyTime != null">notify_time = #{notifyTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiskAlertLogByIds" parameterType="String">
+        delete from risk_alert_log where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <select id="selectUnhandledCount" resultType="int">
+        SELECT COUNT(*) FROM risk_alert_log WHERE is_handled = 0
+    </select>
+
+    <select id="selectAlertLevelStats" resultType="java.util.Map">
+        SELECT alert_level as alertLevel, COUNT(*) as count
+        FROM risk_alert_log
+        GROUP BY alert_level
+        ORDER BY alert_level
+    </select>
+
+    <select id="selectLatestAlerts" parameterType="int" resultMap="RiskAlertLogResult">
+        select a.*, c.company_name from risk_alert_log a
+        left join risk_company c on a.company_id = c.id
+        order by a.create_time desc
+        limit #{limit}
+    </select>
+
+    <select id="existsRecentAlert" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM risk_alert_log
+        WHERE company_id = #{companyId} AND rule_id = #{ruleId}
+        AND create_time >= DATE_SUB(NOW(), INTERVAL #{hours} HOUR)
+    </select>
+
+</mapper>

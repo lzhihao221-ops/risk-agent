@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.CapAdequacyMapper">
+    <resultMap type="com.ruoyi.risk.domain.CapAdequacy" id="CapAdequacyResult">
+        <result property="id" column="id"/>
+        <result property="calcDate" column="calc_date"/>
+        <result property="reportPeriod" column="report_period"/>
+        <result property="tier1Capital" column="tier1_capital"/>
+        <result property="tier1CapitalCore" column="tier1_capital_core"/>
+        <result property="tier1CapitalOther" column="tier1_capital_other"/>
+        <result property="tier2Capital" column="tier2_capital"/>
+        <result property="totalCapital" column="total_capital"/>
+        <result property="rwaCredit" column="rwa_credit"/>
+        <result property="rwaMarket" column="rwa_market"/>
+        <result property="rwaOperation" column="rwa_operation"/>
+        <result property="totalRwa" column="total_rwa"/>
+        <result property="car" column="car"/>
+        <result property="tier1Ratio" column="tier1_ratio"/>
+        <result property="coreRatio" column="core_ratio"/>
+        <result property="carRequirement" column="car_requirement"/>
+        <result property="tier1Requirement" column="tier1_requirement"/>
+        <result property="coreRequirement" column="core_requirement"/>
+        <result property="leverageRatio" column="leverage_ratio"/>
+        <result property="leverageExposure" column="leverage_exposure"/>
+        <result property="status" column="status"/>
+        <result property="calcUser" column="calc_user"/>
+        <result property="confirmUser" column="confirm_user"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="CapAdequacyResult">
+        select * from cap_adequacy where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.CapAdequacy" resultMap="CapAdequacyResult">
+        select * from cap_adequacy
+        <where>
+            <if test="reportPeriod != null and reportPeriod != ''">and report_period = #{reportPeriod}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by calc_date desc
+    </select>
+
+    <select id="selectLatest" resultMap="CapAdequacyResult">
+        select * from cap_adequacy order by calc_date desc limit 1
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.CapAdequacy" useGeneratedKeys="true" keyProperty="id">
+        insert into cap_adequacy (calc_date, report_period, tier1_capital, tier1_capital_core, tier1_capital_other, tier2_capital, total_capital, rwa_credit, rwa_market, rwa_operation, total_rwa, car, tier1_ratio, core_ratio, car_requirement, tier1_requirement, core_requirement, leverage_ratio, leverage_exposure, status, calc_user, confirm_user, remark, create_by)
+        values (#{calcDate}, #{reportPeriod}, #{tier1Capital}, #{tier1CapitalCore}, #{tier1CapitalOther}, #{tier2Capital}, #{totalCapital}, #{rwaCredit}, #{rwaMarket}, #{rwaOperation}, #{totalRwa}, #{car}, #{tier1Ratio}, #{coreRatio}, #{carRequirement}, #{tier1Requirement}, #{coreRequirement}, #{leverageRatio}, #{leverageExposure}, #{status}, #{calcUser}, #{confirmUser}, #{remark}, #{createBy})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.CapAdequacy">
+        update cap_adequacy
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="confirmUser != null">confirm_user = #{confirmUser},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from cap_adequacy where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

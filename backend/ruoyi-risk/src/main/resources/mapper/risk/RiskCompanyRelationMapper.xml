@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RiskCompanyRelationMapper">
+    <resultMap type="com.ruoyi.risk.domain.RiskCompanyRelation" id="RiskCompanyRelationResult">
+        <result property="id" column="id" />
+        <result property="companyId" column="company_id" />
+        <result property="relatedCompany" column="related_company" />
+        <result property="relatedCreditCode" column="related_credit_code" />
+        <result property="relatedPerson" column="related_person" />
+        <result property="relationType" column="relation_type" />
+        <result property="relationDetail" column="relation_detail" />
+        <result property="dataSource" column="data_source" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <select id="selectRiskCompanyRelationById" parameterType="Long" resultMap="RiskCompanyRelationResult">
+        select * from risk_company_relation where id = #{id}
+    </select>
+
+    <select id="selectRiskCompanyRelationList" parameterType="com.ruoyi.risk.domain.RiskCompanyRelation" resultMap="RiskCompanyRelationResult">
+        select * from risk_company_relation
+        <where>
+            <if test="companyId != null">and company_id = #{companyId}</if>
+            <if test="relationType != null and relationType != ''">and relation_type = #{relationType}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectByCompanyId" parameterType="Long" resultMap="RiskCompanyRelationResult">
+        select * from risk_company_relation where company_id = #{companyId}
+    </select>
+
+    <insert id="insertRiskCompanyRelation" parameterType="com.ruoyi.risk.domain.RiskCompanyRelation" useGeneratedKeys="true" keyProperty="id">
+        insert into risk_company_relation (company_id, related_company, related_credit_code, related_person, relation_type, relation_detail, data_source) values (#{companyId}, #{relatedCompany}, #{relatedCreditCode}, #{relatedPerson}, #{relationType}, #{relationDetail}, #{dataSource})
+    </insert>
+
+    <delete id="deleteRiskCompanyRelationById" parameterType="Long">
+        delete from risk_company_relation where id = #{id}
+    </delete>
+</mapper>

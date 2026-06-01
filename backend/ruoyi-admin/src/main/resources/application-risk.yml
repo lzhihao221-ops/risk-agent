@@ -1,0 +1,24 @@
+# 银行风险管理系统 - 数据源配置
+# 在此处填写各数据源的 API Key/Token
+# 不需要的留空即可，系统会自动跳过
+
+risk:
+  datasource:
+    # 天眼查开放平台
+    # 注册地址: https://open.tianyancha.com/
+    # 获取 Token 后填入下方
+    tianyancha:
+      token: ""
+      base-url: "https://open.tianyancha.com/services/open"
+
+    # 企查查开放平台
+    # 注册地址: https://open.qichacha.com/
+    qichacha:
+      token: ""
+      base-url: "https://api.qichacha.com"
+
+    # 阿里云市场 - 被执行人查询
+    # 购买地址: https://market.aliyun.com/
+    aliyun:
+      app-code: ""
+      base-url: "https://cxkj.market.alicloudapi.com"

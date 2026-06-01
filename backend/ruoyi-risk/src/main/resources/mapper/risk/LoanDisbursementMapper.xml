@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanDisbursementMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanDisbursement" id="DisbursementResult">
+        <result property="id" column="id"/>
+        <result property="loanNo" column="loan_no"/>
+        <result property="appNo" column="app_no"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="disburseAmount" column="disburse_amount"/>
+        <result property="disburseDate" column="disburse_date"/>
+        <result property="disburseAccount" column="disburse_account"/>
+        <result property="receiveAccount" column="receive_account"/>
+        <result property="receiveBank" column="receive_bank"/>
+        <result property="disburseType" column="disburse_type"/>
+        <result property="status" column="status"/>
+        <result property="operatorName" column="operator_name"/>
+        <result property="approveUser" column="approve_user"/>
+        <result property="approveTime" column="approve_time"/>
+        <result property="disburseTime" column="disburse_time"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="DisbursementResult">
+        SELECT * FROM loan_disbursement WHERE id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanDisbursement" resultMap="DisbursementResult">
+        SELECT * FROM loan_disbursement
+        <where>
+            <if test="companyName != null and companyName != ''">
+                AND company_name LIKE CONCAT('%', #{companyName}, '%')
+            </if>
+            <if test="loanNo != null and loanNo != ''">
+                AND loan_no LIKE CONCAT('%', #{loanNo}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="disburseType != null and disburseType != ''">
+                AND disburse_type = #{disburseType}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanDisbursement" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_disbursement (loan_no, app_no, company_id, company_name, disburse_amount,
+            disburse_date, disburse_account, receive_account, receive_bank, disburse_type,
+            status, operator_name, remark, create_by)
+        VALUES (#{loanNo}, #{appNo}, #{companyId}, #{companyName}, #{disburseAmount},
+            #{disburseDate}, #{disburseAccount}, #{receiveAccount}, #{receiveBank}, #{disburseType},
+            #{status}, #{operatorName}, #{remark}, #{createBy})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanDisbursement">
+        UPDATE loan_disbursement
+        <set>
+            <if test="disburseAmount != null">disburse_amount = #{disburseAmount},</if>
+            <if test="disburseDate != null">disburse_date = #{disburseDate},</if>
+            <if test="disburseAccount != null">disburse_account = #{disburseAccount},</if>
+            <if test="receiveAccount != null">receive_account = #{receiveAccount},</if>
+            <if test="receiveBank != null">receive_bank = #{receiveBank},</if>
+            <if test="disburseType != null">disburse_type = #{disburseType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="approveUser != null">approve_user = #{approveUser},</if>
+            <if test="approveTime != null">approve_time = #{approveTime},</if>
+            <if test="disburseTime != null">disburse_time = #{disburseTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByIds">
+        DELETE FROM loan_disbursement WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <select id="selectStatusStats" resultType="java.util.Map">
+        SELECT status, COUNT(*) as count, SUM(disburse_amount) as totalAmount
+        FROM loan_disbursement GROUP BY status
+    </select>
+
+    <select id="selectSummary" resultType="java.util.Map">
+        SELECT
+            SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) as pendingCount,
+            SUM(CASE WHEN status = 0 THEN disburse_amount ELSE 0 END) as pendingAmount,
+            SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as disbursedCount,
+            SUM(CASE WHEN status = 1 THEN disburse_amount ELSE 0 END) as disbursedAmount
+        FROM loan_disbursement
+    </select>
+</mapper>

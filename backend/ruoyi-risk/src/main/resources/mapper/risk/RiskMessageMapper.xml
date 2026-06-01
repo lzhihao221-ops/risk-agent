@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RiskMessageMapper">
+
+    <select id="selectMessageById" parameterType="Long" resultType="com.ruoyi.risk.domain.RiskMessage">
+        SELECT * FROM risk_message WHERE id = #{id}
+    </select>
+
+    <select id="selectMessageList" parameterType="com.ruoyi.risk.domain.RiskMessage" resultType="com.ruoyi.risk.domain.RiskMessage">
+        SELECT * FROM risk_message
+        <where>
+            <if test="userId != null">AND user_id = #{userId}</if>
+            <if test="msgType != null">AND msg_type = #{msgType}</if>
+            <if test="isRead != null">AND is_read = #{isRead}</if>
+            <if test="title != null and title != ''">AND title LIKE CONCAT('%', #{title}, '%')</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectUnreadByUserId" parameterType="Long" resultType="com.ruoyi.risk.domain.RiskMessage">
+        SELECT * FROM risk_message WHERE user_id = #{userId} AND is_read = 0 ORDER BY create_time DESC
+    </select>
+
+    <select id="countUnreadByUserId" parameterType="Long" resultType="int">
+        SELECT COUNT(*) FROM risk_message WHERE user_id = #{userId} AND is_read = 0
+    </select>
+
+    <insert id="insertMessage" parameterType="com.ruoyi.risk.domain.RiskMessage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO risk_message (user_id, title, content, msg_type, ref_type, ref_id, is_read, create_time)
+        VALUES (#{userId}, #{title}, #{content}, #{msgType}, #{refType}, #{refId}, 0, sysdate())
+    </insert>
+
+    <update id="updateMessage" parameterType="com.ruoyi.risk.domain.RiskMessage">
+        UPDATE risk_message
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="isRead != null">is_read = #{isRead},</if>
+            <if test="readTime != null">read_time = #{readTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="markAsRead">
+        UPDATE risk_message SET is_read = 1, read_time = sysdate() WHERE id = #{id}
+    </update>
+
+    <update id="markAllAsRead">
+        UPDATE risk_message SET is_read = 1, read_time = sysdate() WHERE user_id = #{userId} AND is_read = 0
+    </update>
+
+    <delete id="deleteMessageById" parameterType="Long">
+        DELETE FROM risk_message WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteMessageByIds" parameterType="Long">
+        DELETE FROM risk_message WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RiskCheckTaskMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.RiskCheckTask" id="RiskCheckTaskResult">
+        <result property="id"           column="id"           />
+        <result property="companyId"    column="company_id"   />
+        <result property="loanId"       column="loan_id"      />
+        <result property="taskType"     column="task_type"    />
+        <result property="taskStatus"   column="task_status"  />
+        <result property="assigneeId"   column="assignee_id"  />
+        <result property="assigneeName" column="assignee_name"/>
+        <result property="dueDate"      column="due_date"     />
+        <result property="completeTime" column="complete_time"/>
+        <result property="checkResult"  column="check_result" />
+        <result property="checkReport"  column="check_report" />
+        <result property="remark"       column="remark"       />
+        <result property="createBy"     column="create_by"    />
+        <result property="createTime"   column="create_time"  />
+        <result property="updateBy"     column="update_by"    />
+        <result property="updateTime"   column="update_time"  />
+        <result property="companyName"  column="company_name" />
+    </resultMap>
+
+    <select id="selectRiskCheckTaskById" parameterType="Long" resultMap="RiskCheckTaskResult">
+        select t.*, c.company_name from risk_check_task t
+        left join risk_company c on t.company_id = c.id
+        where t.id = #{id}
+    </select>
+
+    <select id="selectRiskCheckTaskList" parameterType="com.ruoyi.risk.domain.RiskCheckTask" resultMap="RiskCheckTaskResult">
+        select t.*, c.company_name from risk_check_task t
+        left join risk_company c on t.company_id = c.id
+        <where>
+            <if test="companyId != null">AND t.company_id = #{companyId}</if>
+            <if test="taskType != null and taskType != ''">AND t.task_type = #{taskType}</if>
+            <if test="taskStatus != null">AND t.task_status = #{taskStatus}</if>
+            <if test="assigneeId != null">AND t.assignee_id = #{assigneeId}</if>
+        </where>
+        order by t.due_date asc
+    </select>
+
+    <insert id="insertRiskCheckTask" parameterType="com.ruoyi.risk.domain.RiskCheckTask" useGeneratedKeys="true" keyProperty="id">
+        insert into risk_check_task (
+            company_id, loan_id, task_type, task_status,
+            assignee_id, assignee_name, due_date,
+            create_by, create_time, remark
+        ) values (
+            #{companyId}, #{loanId}, #{taskType}, #{taskStatus},
+            #{assigneeId}, #{assigneeName}, #{dueDate},
+            #{createBy}, sysdate(), #{remark}
+        )
+    </insert>
+
+    <update id="updateRiskCheckTask" parameterType="com.ruoyi.risk.domain.RiskCheckTask">
+        update risk_check_task
+        <set>
+            <if test="taskStatus != null">task_status = #{taskStatus},</if>
+            <if test="checkResult != null">check_result = #{checkResult},</if>
+            <if test="checkReport != null">check_report = #{checkReport},</if>
+            <if test="completeTime != null">complete_time = #{completeTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_by = #{updateBy}, update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRiskCheckTaskByIds" parameterType="String">
+        delete from risk_check_task where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <select id="selectOverdueCount" resultType="int">
+        SELECT COUNT(*) FROM risk_check_task WHERE task_status <![CDATA[ != ]]> 2 AND due_date <![CDATA[ < ]]> CURDATE()
+    </select>
+
+    <select id="selectTaskStatusStats" resultType="java.util.Map">
+        SELECT task_status as taskStatus, COUNT(*) as count
+        FROM risk_check_task
+        GROUP BY task_status
+        ORDER BY task_status
+    </select>
+
+    <select id="selectTodoTasks" resultMap="RiskCheckTaskResult">
+        select t.*, c.company_name from risk_check_task t
+        left join risk_company c on t.company_id = c.id
+        where t.assignee_id = #{userId} and t.task_status in (0, 1)
+        order by t.due_date asc
+        limit #{limit}
+    </select>
+
+</mapper>

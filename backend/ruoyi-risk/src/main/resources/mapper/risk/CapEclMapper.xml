@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.CapEclMapper">
+    <resultMap type="com.ruoyi.risk.domain.CapEcl" id="CapEclResult">
+        <result property="id" column="id"/>
+        <result property="calcDate" column="calc_date"/>
+        <result property="loanId" column="loan_id"/>
+        <result property="loanNo" column="loan_no"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="stage" column="stage"/>
+        <result property="carryingAmount" column="carrying_amount"/>
+        <result property="pd12m" column="pd_12m"/>
+        <result property="pdLifetime" column="pd_lifetime"/>
+        <result property="lgd" column="lgd"/>
+        <result property="ead" column="ead"/>
+        <result property="ecl12m" column="ecl_12m"/>
+        <result property="eclLifetime" column="ecl_lifetime"/>
+        <result property="eclAmount" column="ecl_amount"/>
+        <result property="provisionRate" column="provision_rate"/>
+        <result property="calcMethod" column="calc_method"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="CapEclResult">
+        select * from cap_ecl where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.CapEcl" resultMap="CapEclResult">
+        select * from cap_ecl
+        <where>
+            <if test="calcDate != null">and calc_date = #{calcDate}</if>
+            <if test="companyId != null">and company_id = #{companyId}</if>
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="stage != null">and stage = #{stage}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by calc_date desc
+    </select>
+
+    <select id="selectByDate" parameterType="String" resultMap="CapEclResult">
+        select * from cap_ecl where calc_date = #{calcDate} and status = 1
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.CapEcl" useGeneratedKeys="true" keyProperty="id">
+        insert into cap_ecl (calc_date, loan_id, loan_no, company_id, company_name, stage, carrying_amount, pd_12m, pd_lifetime, lgd, ead, ecl_12m, ecl_lifetime, ecl_amount, provision_rate, calc_method, status, remark, create_by)
+        values (#{calcDate}, #{loanId}, #{loanNo}, #{companyId}, #{companyName}, #{stage}, #{carryingAmount}, #{pd12m}, #{pdLifetime}, #{lgd}, #{ead}, #{ecl12m}, #{eclLifetime}, #{eclAmount}, #{provisionRate}, #{calcMethod}, #{status}, #{remark}, #{createBy})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.CapEcl">
+        update cap_ecl
+        <set>
+            <if test="stage != null">stage = #{stage},</if>
+            <if test="carryingAmount != null">carrying_amount = #{carryingAmount},</if>
+            <if test="eclAmount != null">ecl_amount = #{eclAmount},</if>
+            <if test="provisionRate != null">provision_rate = #{provisionRate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from cap_ecl where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanWriteoffMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.LoanWriteoff" id="LoanWriteoffResult">
+        <result property="id"                column="id"                />
+        <result property="loanId"            column="loan_id"           />
+        <result property="loanNo"            column="loan_no"           />
+        <result property="companyId"         column="company_id"        />
+        <result property="companyName"       column="company_name"      />
+        <result property="writeoffAmount"    column="writeoff_amount"   />
+        <result property="writeoffPrincipal" column="writeoff_principal"/>
+        <result property="writeoffInterest"  column="writeoff_interest" />
+        <result property="writeoffReason"    column="writeoff_reason"   />
+        <result property="writeoffType"      column="writeoff_type"     />
+        <result property="fiveCategory"      column="five_category"     />
+        <result property="approveUser"       column="approve_user"      />
+        <result property="approveTime"       column="approve_time"      />
+        <result property="approveOpinion"    column="approve_opinion"   />
+        <result property="writeoffDate"      column="writeoff_date"     />
+        <result property="status"            column="status"            />
+        <result property="recoverAmount"     column="recover_amount"    />
+        <result property="remark"            column="remark"            />
+        <result property="createBy"          column="create_by"         />
+        <result property="createTime"        column="create_time"       />
+        <result property="updateBy"          column="update_by"         />
+        <result property="updateTime"        column="update_time"       />
+    </resultMap>
+
+    <sql id="selectVo">
+        select id, loan_id, loan_no, company_id, company_name, writeoff_amount,
+               writeoff_principal, writeoff_interest, writeoff_reason, writeoff_type,
+               five_category, approve_user, approve_time, approve_opinion, writeoff_date,
+               status, recover_amount, remark, create_by, create_time, update_by, update_time
+        from loan_writeoff
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="LoanWriteoffResult">
+        <include refid="selectVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanWriteoff" resultMap="LoanWriteoffResult">
+        <include refid="selectVo"/>
+        <where>
+            <if test="loanNo != null and loanNo != ''">and loan_no like concat('%', #{loanNo}, '%')</if>
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="writeoffType != null and writeoffType != ''">and writeoff_type = #{writeoffType}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanWriteoff" useGeneratedKeys="true" keyProperty="id">
+        insert into loan_writeoff (
+            <if test="loanId != null">loan_id,</if>
+            <if test="loanNo != null and loanNo != ''">loan_no,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null and companyName != ''">company_name,</if>
+            <if test="writeoffAmount != null">writeoff_amount,</if>
+            <if test="writeoffPrincipal != null">writeoff_principal,</if>
+            <if test="writeoffInterest != null">writeoff_interest,</if>
+            <if test="writeoffReason != null and writeoffReason != ''">writeoff_reason,</if>
+            <if test="writeoffType != null and writeoffType != ''">writeoff_type,</if>
+            <if test="fiveCategory != null">five_category,</if>
+            <if test="approveUser != null and approveUser != ''">approve_user,</if>
+            <if test="approveTime != null">approve_time,</if>
+            <if test="approveOpinion != null and approveOpinion != ''">approve_opinion,</if>
+            <if test="writeoffDate != null">writeoff_date,</if>
+            <if test="status != null">status,</if>
+            <if test="recoverAmount != null">recover_amount,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time
+        ) values (
+            <if test="loanId != null">#{loanId},</if>
+            <if test="loanNo != null and loanNo != ''">#{loanNo},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null and companyName != ''">#{companyName},</if>
+            <if test="writeoffAmount != null">#{writeoffAmount},</if>
+            <if test="writeoffPrincipal != null">#{writeoffPrincipal},</if>
+            <if test="writeoffInterest != null">#{writeoffInterest},</if>
+            <if test="writeoffReason != null and writeoffReason != ''">#{writeoffReason},</if>
+            <if test="writeoffType != null and writeoffType != ''">#{writeoffType},</if>
+            <if test="fiveCategory != null">#{fiveCategory},</if>
+            <if test="approveUser != null and approveUser != ''">#{approveUser},</if>
+            <if test="approveTime != null">#{approveTime},</if>
+            <if test="approveOpinion != null and approveOpinion != ''">#{approveOpinion},</if>
+            <if test="writeoffDate != null">#{writeoffDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="recoverAmount != null">#{recoverAmount},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanWriteoff">
+        update loan_writeoff
+        <set>
+            <if test="loanId != null">loan_id = #{loanId},</if>
+            <if test="loanNo != null and loanNo != ''">loan_no = #{loanNo},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null and companyName != ''">company_name = #{companyName},</if>
+            <if test="writeoffAmount != null">writeoff_amount = #{writeoffAmount},</if>
+            <if test="writeoffPrincipal != null">writeoff_principal = #{writeoffPrincipal},</if>
+            <if test="writeoffInterest != null">writeoff_interest = #{writeoffInterest},</if>
+            <if test="writeoffReason != null and writeoffReason != ''">writeoff_reason = #{writeoffReason},</if>
+            <if test="writeoffType != null and writeoffType != ''">writeoff_type = #{writeoffType},</if>
+            <if test="fiveCategory != null">five_category = #{fiveCategory},</if>
+            <if test="approveUser != null and approveUser != ''">approve_user = #{approveUser},</if>
+            <if test="approveTime != null">approve_time = #{approveTime},</if>
+            <if test="approveOpinion != null and approveOpinion != ''">approve_opinion = #{approveOpinion},</if>
+            <if test="writeoffDate != null">writeoff_date = #{writeoffDate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="recoverAmount != null">recover_amount = #{recoverAmount},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from loan_writeoff where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

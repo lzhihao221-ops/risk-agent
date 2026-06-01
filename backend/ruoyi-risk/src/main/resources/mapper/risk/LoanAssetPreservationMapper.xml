@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanAssetPreservationMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.LoanAssetPreservation" id="LoanAssetPreservationResult">
+        <result property="id"               column="id"               />
+        <result property="loanId"           column="loan_id"          />
+        <result property="loanNo"           column="loan_no"          />
+        <result property="companyId"        column="company_id"       />
+        <result property="companyName"      column="company_name"     />
+        <result property="preserveType"     column="preserve_type"    />
+        <result property="preserveStatus"   column="preserve_status"  />
+        <result property="courtName"        column="court_name"       />
+        <result property="caseNo"           column="case_no"          />
+        <result property="claimAmount"      column="claim_amount"     />
+        <result property="preserveAmount"   column="preserve_amount"  />
+        <result property="preserveAsset"    column="preserve_asset"   />
+        <result property="lawyerName"       column="lawyer_name"      />
+        <result property="filingDate"       column="filing_date"      />
+        <result property="hearingDate"      column="hearing_date"     />
+        <result property="judgmentDate"     column="judgment_date"    />
+        <result property="judgmentResult"   column="judgment_result"  />
+        <result property="executionStatus"  column="execution_status" />
+        <result property="recoveryAmount"   column="recovery_amount"  />
+        <result property="remark"           column="remark"           />
+        <result property="createBy"         column="create_by"        />
+        <result property="createTime"       column="create_time"      />
+        <result property="updateBy"         column="update_by"        />
+        <result property="updateTime"       column="update_time"      />
+    </resultMap>
+
+    <sql id="selectVo">
+        select id, loan_id, loan_no, company_id, company_name, preserve_type, preserve_status,
+               court_name, case_no, claim_amount, preserve_amount, preserve_asset, lawyer_name,
+               filing_date, hearing_date, judgment_date, judgment_result, execution_status,
+               recovery_amount, remark, create_by, create_time, update_by, update_time
+        from loan_asset_preservation
+    </sql>
+
+    <select id="selectById" parameterType="Long" resultMap="LoanAssetPreservationResult">
+        <include refid="selectVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanAssetPreservation" resultMap="LoanAssetPreservationResult">
+        <include refid="selectVo"/>
+        <where>
+            <if test="loanNo != null and loanNo != ''">and loan_no like concat('%', #{loanNo}, '%')</if>
+            <if test="companyName != null and companyName != ''">and company_name like concat('%', #{companyName}, '%')</if>
+            <if test="preserveType != null and preserveType != ''">and preserve_type = #{preserveType}</if>
+            <if test="preserveStatus != null">and preserve_status = #{preserveStatus}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanAssetPreservation" useGeneratedKeys="true" keyProperty="id">
+        insert into loan_asset_preservation (
+            <if test="loanId != null">loan_id,</if>
+            <if test="loanNo != null and loanNo != ''">loan_no,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null and companyName != ''">company_name,</if>
+            <if test="preserveType != null and preserveType != ''">preserve_type,</if>
+            <if test="preserveStatus != null">preserve_status,</if>
+            <if test="courtName != null and courtName != ''">court_name,</if>
+            <if test="caseNo != null and caseNo != ''">case_no,</if>
+            <if test="claimAmount != null">claim_amount,</if>
+            <if test="preserveAmount != null">preserve_amount,</if>
+            <if test="preserveAsset != null and preserveAsset != ''">preserve_asset,</if>
+            <if test="lawyerName != null and lawyerName != ''">lawyer_name,</if>
+            <if test="filingDate != null">filing_date,</if>
+            <if test="hearingDate != null">hearing_date,</if>
+            <if test="judgmentDate != null">judgment_date,</if>
+            <if test="judgmentResult != null and judgmentResult != ''">judgment_result,</if>
+            <if test="executionStatus != null and executionStatus != ''">execution_status,</if>
+            <if test="recoveryAmount != null">recovery_amount,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time
+        ) values (
+            <if test="loanId != null">#{loanId},</if>
+            <if test="loanNo != null and loanNo != ''">#{loanNo},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyName != null and companyName != ''">#{companyName},</if>
+            <if test="preserveType != null and preserveType != ''">#{preserveType},</if>
+            <if test="preserveStatus != null">#{preserveStatus},</if>
+            <if test="courtName != null and courtName != ''">#{courtName},</if>
+            <if test="caseNo != null and caseNo != ''">#{caseNo},</if>
+            <if test="claimAmount != null">#{claimAmount},</if>
+            <if test="preserveAmount != null">#{preserveAmount},</if>
+            <if test="preserveAsset != null and preserveAsset != ''">#{preserveAsset},</if>
+            <if test="lawyerName != null and lawyerName != ''">#{lawyerName},</if>
+            <if test="filingDate != null">#{filingDate},</if>
+            <if test="hearingDate != null">#{hearingDate},</if>
+            <if test="judgmentDate != null">#{judgmentDate},</if>
+            <if test="judgmentResult != null and judgmentResult != ''">#{judgmentResult},</if>
+            <if test="executionStatus != null and executionStatus != ''">#{executionStatus},</if>
+            <if test="recoveryAmount != null">#{recoveryAmount},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanAssetPreservation">
+        update loan_asset_preservation
+        <set>
+            <if test="loanId != null">loan_id = #{loanId},</if>
+            <if test="loanNo != null and loanNo != ''">loan_no = #{loanNo},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null and companyName != ''">company_name = #{companyName},</if>
+            <if test="preserveType != null and preserveType != ''">preserve_type = #{preserveType},</if>
+            <if test="preserveStatus != null">preserve_status = #{preserveStatus},</if>
+            <if test="courtName != null and courtName != ''">court_name = #{courtName},</if>
+            <if test="caseNo != null and caseNo != ''">case_no = #{caseNo},</if>
+            <if test="claimAmount != null">claim_amount = #{claimAmount},</if>
+            <if test="preserveAmount != null">preserve_amount = #{preserveAmount},</if>
+            <if test="preserveAsset != null and preserveAsset != ''">preserve_asset = #{preserveAsset},</if>
+            <if test="lawyerName != null and lawyerName != ''">lawyer_name = #{lawyerName},</if>
+            <if test="filingDate != null">filing_date = #{filingDate},</if>
+            <if test="hearingDate != null">hearing_date = #{hearingDate},</if>
+            <if test="judgmentDate != null">judgment_date = #{judgmentDate},</if>
+            <if test="judgmentResult != null and judgmentResult != ''">judgment_result = #{judgmentResult},</if>
+            <if test="executionStatus != null and executionStatus != ''">execution_status = #{executionStatus},</if>
+            <if test="recoveryAmount != null">recovery_amount = #{recoveryAmount},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds" parameterType="String">
+        delete from loan_asset_preservation where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

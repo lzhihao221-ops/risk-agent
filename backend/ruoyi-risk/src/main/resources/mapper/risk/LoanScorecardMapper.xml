@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanScorecardMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanScorecard" id="ScoreResult">
+        <result property="id" column="id"/><result property="companyId" column="company_id"/><result property="companyName" column="company_name"/>
+        <result property="scoreDate" column="score_date"/><result property="scoreFinancial" column="score_financial"/>
+        <result property="scoreOperation" column="score_operation"/><result property="scoreCredit" column="score_credit"/>
+        <result property="scoreCollateral" column="score_collateral"/><result property="scoreIndustry" column="score_industry"/>
+        <result property="totalScore" column="total_score"/><result property="grade" column="grade"/>
+        <result property="suggestAmount" column="suggest_amount"/><result property="suggestRate" column="suggest_rate"/>
+    </resultMap>
+    <select id="selectById" parameterType="Long" resultMap="ScoreResult">SELECT * FROM loan_scorecard WHERE id=#{id}</select>
+    <select id="selectLatestByCompanyId" parameterType="Long" resultMap="ScoreResult">SELECT * FROM loan_scorecard WHERE company_id=#{companyId} ORDER BY score_date DESC LIMIT 1</select>
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanScorecard" resultMap="ScoreResult">SELECT * FROM loan_scorecard ORDER BY score_date DESC</select>
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanScorecard" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_scorecard (company_id,company_name,score_date,score_financial,score_operation,score_credit,score_collateral,score_industry,total_score,grade,suggest_amount,suggest_rate,create_by) VALUES (#{companyId},#{companyName},#{scoreDate},#{scoreFinancial},#{scoreOperation},#{scoreCredit},#{scoreCollateral},#{scoreIndustry},#{totalScore},#{grade},#{suggestAmount},#{suggestRate},#{createBy})
+    </insert>
+</mapper>

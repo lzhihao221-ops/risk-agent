@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.GisMapper">
+
+    <resultMap type="com.ruoyi.risk.domain.GisBranch" id="GisBranchResult">
+        <result property="id"          column="id"          />
+        <result property="branchName"  column="branch_name" />
+        <result property="branchCode"  column="branch_code" />
+        <result property="branchType"  column="branch_type" />
+        <result property="longitude"   column="longitude"   />
+        <result property="latitude"    column="latitude"    />
+        <result property="province"    column="province"    />
+        <result property="city"        column="city"        />
+        <result property="district"    column="district"    />
+        <result property="address"     column="address"     />
+        <result property="phone"       column="phone"       />
+        <result property="manager"     column="manager"     />
+        <result property="staffCount"  column="staff_count" />
+        <result property="status"      column="status"      />
+        <result property="createBy"    column="create_by"   />
+        <result property="createTime"  column="create_time" />
+        <result property="updateBy"    column="update_by"   />
+        <result property="updateTime"  column="update_time" />
+        <result property="remark"      column="remark"      />
+    </resultMap>
+
+    <resultMap type="com.ruoyi.risk.domain.GisCustomerRegion" id="GisCustomerRegionResult">
+        <result property="id"            column="id"             />
+        <result property="regionName"    column="region_name"    />
+        <result property="regionType"    column="region_type"    />
+        <result property="longitude"     column="longitude"      />
+        <result property="latitude"      column="latitude"       />
+        <result property="customerCount" column="customer_count" />
+        <result property="loanCount"     column="loan_count"     />
+        <result property="loanAmount"    column="loan_amount"    />
+        <result property="riskLevel"     column="risk_level"     />
+        <result property="createBy"      column="create_by"      />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"      column="update_by"      />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap type="com.ruoyi.risk.domain.GisRiskPoint" id="GisRiskPointResult">
+        <result property="id"          column="id"           />
+        <result property="pointName"   column="point_name"   />
+        <result property="longitude"   column="longitude"    />
+        <result property="latitude"    column="latitude"     />
+        <result property="riskType"    column="risk_type"    />
+        <result property="riskLevel"   column="risk_level"   />
+        <result property="intensity"   column="intensity"    />
+        <result property="amount"      column="amount"       />
+        <result property="companyName" column="company_name" />
+        <result property="description" column="description"  />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"  column="create_time"  />
+    </resultMap>
+
+    <resultMap type="com.ruoyi.risk.domain.GisCheckinRecord" id="GisCheckinRecordResult">
+        <result property="id"          column="id"           />
+        <result property="userId"      column="user_id"      />
+        <result property="userName"    column="user_name"    />
+        <result property="longitude"   column="longitude"    />
+        <result property="latitude"    column="latitude"     />
+        <result property="address"     column="address"      />
+        <result property="checkinType" column="checkin_type" />
+        <result property="checkinTime" column="checkin_time" />
+        <result property="companyName" column="company_name" />
+        <result property="remark"      column="remark"       />
+        <result property="photoUrl"    column="photo_url"    />
+        <result property="status"      column="status"       />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"  column="create_time"  />
+    </resultMap>
+
+    <select id="selectBranchList" resultMap="GisBranchResult">
+        select * from gis_branch order by id
+    </select>
+
+    <select id="selectCustomerRegionList" resultMap="GisCustomerRegionResult">
+        select * from gis_customer_region order by customer_count desc
+    </select>
+
+    <select id="selectRiskPointList" resultMap="GisRiskPointResult">
+        select * from gis_risk_point order by intensity desc
+    </select>
+
+    <select id="selectCheckinRecordList" resultMap="GisCheckinRecordResult">
+        select * from gis_checkin_record
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and checkin_time &gt;= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and checkin_time &lt;= #{endDate}
+            </if>
+        </where>
+        order by checkin_time desc
+    </select>
+
+    <insert id="insertCheckinRecord" parameterType="com.ruoyi.risk.domain.GisCheckinRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into gis_checkin_record (
+            user_id, user_name, longitude, latitude, address,
+            checkin_type, checkin_time, company_name, remark, photo_url, status,
+            create_by, create_time
+        ) values (
+            #{userId}, #{userName}, #{longitude}, #{latitude}, #{address},
+            #{checkinType}, #{checkinTime}, #{companyName}, #{remark}, #{photoUrl}, #{status},
+            #{createBy}, sysdate()
+        )
+    </insert>
+
+</mapper>

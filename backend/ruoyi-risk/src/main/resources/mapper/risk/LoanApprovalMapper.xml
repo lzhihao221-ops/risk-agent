@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanApprovalMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanApproval" id="ApprovalResult">
+        <result property="id" column="id"/><result property="appId" column="app_id"/><result property="appNo" column="app_no"/>
+        <result property="approveLevel" column="approve_level"/><result property="approveRole" column="approve_role"/>
+        <result property="approveUser" column="approve_user"/><result property="approveResult" column="approve_result"/>
+        <result property="approveOpinion" column="approve_opinion"/><result property="approveTime" column="approve_time"/>
+    </resultMap>
+    <select id="selectByAppId" parameterType="Long" resultMap="ApprovalResult">SELECT * FROM loan_approval WHERE app_id=#{appId} ORDER BY approve_level</select>
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanApproval" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_approval (app_id,app_no,approve_level,approve_role,approve_user_id,approve_user,approve_result,approve_opinion,approve_time) VALUES (#{appId},#{appNo},#{approveLevel},#{approveRole},#{approveUserId},#{approveUser},#{approveResult},#{approveOpinion},#{approveTime})
+    </insert>
+</mapper>

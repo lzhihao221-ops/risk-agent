@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.RwaRiskWeightMapper">
+    <select id="selectByExact" resultType="java.util.Map">
+        SELECT risk_weight, ccf FROM rwa_risk_weight
+        WHERE asset_class = #{assetClass} AND asset_subclass = #{assetSubclass}
+        AND counterparty_type = #{counterpartyType}
+        AND (rating_grade = #{ratingGrade} OR rating_grade IS NULL)
+        AND status = '1'
+        ORDER BY rating_grade IS NULL ASC LIMIT 1
+    </select>
+
+    <select id="selectByClass" resultType="java.util.Map">
+        SELECT risk_weight, ccf FROM rwa_risk_weight
+        WHERE asset_class = #{assetClass}
+        AND (rating_grade = #{ratingGrade} OR rating_grade IS NULL)
+        AND status = '1'
+        ORDER BY rating_grade IS NULL ASC LIMIT 1
+    </select>
+</mapper>

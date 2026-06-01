@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.risk.mapper.LoanRateAdjustMapper">
+    <resultMap type="com.ruoyi.risk.domain.LoanRateAdjust" id="RateAdjustResult">
+        <result property="id" column="id"/>
+        <result property="loanId" column="loan_id"/>
+        <result property="loanNo" column="loan_no"/>
+        <result property="oldRate" column="old_rate"/>
+        <result property="newRate" column="new_rate"/>
+        <result property="adjustReason" column="adjust_reason"/>
+        <result property="adjustType" column="adjust_type"/>
+        <result property="effectiveDate" column="effective_date"/>
+        <result property="operatorName" column="operator_name"/>
+        <result property="approveUser" column="approve_user"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Long" resultMap="RateAdjustResult">
+        SELECT * FROM loan_rate_adjust WHERE id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.risk.domain.LoanRateAdjust" resultMap="RateAdjustResult">
+        SELECT * FROM loan_rate_adjust
+        <where>
+            <if test="loanNo != null and loanNo != ''">
+                AND loan_no LIKE CONCAT('%', #{loanNo}, '%')
+            </if>
+            <if test="adjustType != null and adjustType != ''">
+                AND adjust_type = #{adjustType}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByLoanId" parameterType="Long" resultMap="RateAdjustResult">
+        SELECT * FROM loan_rate_adjust WHERE loan_id = #{loanId} ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.ruoyi.risk.domain.LoanRateAdjust" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO loan_rate_adjust (loan_id, loan_no, old_rate, new_rate, adjust_reason,
+            adjust_type, effective_date, operator_name, approve_user)
+        VALUES (#{loanId}, #{loanNo}, #{oldRate}, #{newRate}, #{adjustReason},
+            #{adjustType}, #{effectiveDate}, #{operatorName}, #{approveUser})
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.risk.domain.LoanRateAdjust">
+        UPDATE loan_rate_adjust
+        <set>
+            <if test="oldRate != null">old_rate = #{oldRate},</if>
+            <if test="newRate != null">new_rate = #{newRate},</if>
+            <if test="adjustReason != null">adjust_reason = #{adjustReason},</if>
+            <if test="adjustType != null">adjust_type = #{adjustType},</if>
+            <if test="effectiveDate != null">effective_date = #{effectiveDate},</if>
+            <if test="approveUser != null">approve_user = #{approveUser},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByIds">
+        DELETE FROM loan_rate_adjust WHERE id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>
